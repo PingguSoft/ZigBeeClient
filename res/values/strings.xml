@@ -1,0 +1,121 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">ZigBee Server</string>
+
+    <string name="not_connected">You are not connected to a device</string>
+    <string name="bt_not_enabled_leaving">Bluetooth was not enabled.</string>
+    <string name="title_connecting">connecting...</string>
+    <string name="title_connected_to">connected: </string>
+    <string name="title_not_connected">not connected</string>
+    <string name="connected_to">Connected to </string>
+    <string name="unable_connect">Unable to connect device</string>
+    <string name="connection_lost">Device connection was lost</string>
+
+    <string name="scanning">scanning for devices...</string>
+    <string name="select_device">select a device to connect</string>
+    <string name="none_paired">No devices have been paired</string>
+    <string name="none_found">No devices found</string>
+
+   
+    <!-- main -->
+    <string name="main_btcon_config_section">Settings</string>
+    <string name="main_server_config">BTCon Settings</string>
+    <string name="main_server_config_desc">Configure application settings</string>
+    <string name="main_device_config">MultiWii Settings</string>
+    <string name="main_device_config_desc">Configure MultiWii parameters</string>
+    <string name="main_agps_config">u-blox AssistNow Online</string>
+    <string name="main_agps_config_desc">Injecting AGPS data to u-blox GPS module</string>
+
+    <string name="main_bt_controller_section">Controller &amp; Station</string>
+    <string name="main_bt_controller">Controller</string>
+    <string name="main_bt_controller_desc">Launch controller</string>
+    <string name="main_bt_station">Station (Monitoring)</string>
+    <string name="main_bt_station_desc">Launch station</string>
+
+    <string name="main_bt_robot_controller">Robot Controller</string>
+
+    <string name="main_etc_section">ETCs</string>
+    <string name="main_purchase">Purchase</string>
+    <string name="main_purchase_desc">Purchasing application</string>
+    <string name="main_notice">Notice</string>
+    <string name="main_notice_desc">Show application change history</string>
+    <string name="main_quit">QUIT</string>
+    <string name="main_quit_desc">Finish the application</string>
+    <string name="main_inapp_fail">Error purchasing</string>
+    <string name="main_inapp_auth_fail">Authenticity verification failed</string>
+    <string name="main_inapp_success">Thank you for purchasing !</string>
+    <string name="main_inapp_setting_fail">Problem setting up in-app billing !</string>
+    <string name="main_inapp_query_fail">Failed to query inventory !</string>
+    <string name="main_free_timeout">Free evaluation period (24h) is expired</string>
+    <string name="main_authorized">Developer Phone !!</string>
+
+    <!-- BTCon Config -->
+    <string name="config_bt_zigbee_combo">Bluetooth</string>
+    <string name="config_selBT">Select Bluetooth device</string>
+    <string name="config_option">Receiver Radio Option</string>
+    <string name="config_rcvr_bt_only">Bluetooth Only</string>
+    <string name="config_rcvr_bt_10">BT9M, BT10 (Interboard bluetooth receiver)</string>
+    <string name="config_rcvr_zigbee">ZigBee (Probee20S)</string>
+    <string name="config_zigbee">ZigBee</string>
+    <string name="config_sel_zigbee">Select ZigBee device</string>
+    <string name="config_com_test">Communication Test</string>
+    <string name="config_cell">Battery Cell</string>
+    <string name="config_sensor_sensitivity">Sensor Sensitivity</string>
+    <string name="config_zigbee_devices">Scanned ZigBee Devices</string>
+    <string name="config_zigbee_scan">Click for scanning</string>
+    <string name="config_mode">Mode</string>
+    <string name="config_mode_controller">Controller</string>
+    <string name="config_mode_station">Station (Monitoring)</string>
+    
+
+    <!-- Bluetooth Config -->
+    <string name="bt_config_paired_devices">Paired Devices</string>
+    <string name="bt_config_other_devices">Other Available Devices</string>
+    <string name="bt_config_scan">Click for scanning</string>    
+    
+    <!-- MultiWii Config -->
+    <string name="multiwii_rc_tuning">RC Tuning (0.0 ~ 1.0)</string>
+    <string name="multiwii_rc_rate">RC Rate</string>
+    <string name="multiwii_rc_expo">RC Expo</string>
+    <string name="multiwii_thr_mid">Thr Mid</string>
+    <string name="multiwii_thr_expo">Thr Expo</string>
+    <string name="multiwii_throttle">Throttle (1000 ~ 2000)</string>
+    <string name="multiwii_thr_min">Min</string>
+    <string name="multiwii_thr_max">Max</string>
+    <string name="multiwii_thr_fail_safe">FailSafe</string>
+    <string name="multiwii_save">Save</string>
+    <string name="multiwii_battery">Battery Settings</string>
+    <string name="multiwii_battery_scale">Scale</string>
+    <string name="multiwii_battery_warn1">Warning 1</string>
+    <string name="multiwii_battery_warn2">Warning 2</string>
+    <string name="multiwii_battery_critical">Critical</string>
+    <string name="multiwii_battery_voltage">Current Voltage</string>
+    <string name="multiwii_aux">AUX Settings</string>
+    
+    <!-- u-blox AGPS Config -->
+    <string name="config_ublox_ano">GPS - ublox AssistNow Online</string>
+    <string name="config_ublox_inject">Click for injecting</string>
+    <string name="config_ublox_id">ID</string>
+    <string name="config_ublox_enter_id">Enter ID</string>
+    <string name="config_ublox_password">Password</string>
+    <string name="config_ublox_enter_password">Enter Password</string>
+    <string name="config_ublox_error_server">ERROR !!\nublox ActiveNowOnline Server Error\nCheck ID &amp; Password</string>
+    <string name="config_ublox_rx_done">AGPS data download successful\nStart injecting..</string>
+    <string name="config_ublox_inject_done">Injection completed !!</string>
+    <string name="config_ublox_turn_loc_on">Location service is not on\nTurn it on !!</string>
+
+    <!-- BT Controller -->
+    <string name="btn_trim">TRIM</string>
+    <string name="btn_cal_acc">CAL_ACC</string>
+    <string name="btn_cal_mag">CAL_MAG</string>
+    <string name="btn_hold">THR_HOLD</string>
+    
+    <!--  TTS -->
+    <string name="tts_data_err">"Data Error"</string>
+    <string name="tts_aux">"Auxil"</string>
+    <string name="tts_batt_warn1">"Battery Warning 1"</string>
+    <string name="tts_batt_warn2">"Battery Warning 2"</string>
+    <string name="tts_batt_crit">"Battery Critical"</string>
+    <string name="tts_arm">"Armed"</string>
+    <string name="tts_disarm">"Disarmed"</string>
+</resources>

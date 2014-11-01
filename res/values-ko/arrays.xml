@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <string-array name="zigbee_node_type">
+        <item>0 - None</item>
+        <item>1 - Coordinator</item>
+        <item>2 - Router</item>
+        <item>3 - End Device</item>
+        <item>4 - Sleepy End Device</item>
+    </string-array>
+    
+    <string-array name="zigbee_gpio_mode">
+        <item>0 - Disabled</item>
+        <item>1 - DIN</item>
+        <item>2 - DOUT (low)</item>
+        <item>3 - DOUT (high)</item>
+        <item>4 - Analog In</item>
+        <item>5 - Reserve</item>
+    </string-array>
+
+    <string-array name="zigbee_gpio_usage">
+        <item>사용안함</item>
+        <item>모니터링</item>
+        <item>조명</item>
+        <item>스위치</item>
+        <item>아날로그</item>
+        <item>특정기능</item>
+    </string-array>
+</resources>

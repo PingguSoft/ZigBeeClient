@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent" 
+    android:orientation="vertical"
+    android:minWidth="350dp" 
+    android:minHeight="400dp">
+
+    <WebView
+        android:id="@+id/webView"
+        android:layout_margin="10dp"
+        android:layout_weight="8.8"
+        android:layout_width="fill_parent"
+        android:layout_height="0dp"/>
+
+<!--
+    <ScrollView
+        android:id="@+id/scrollView"
+        android:layout_weight="9"
+        android:layout_width="fill_parent"
+        android:layout_height="0dp">
+        
+        <LinearLayout 
+            android:id="@+id/contContainer"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+        </LinearLayout>
+ 
+    </ScrollView>
+-->
+
+    <Button
+        android:id="@+id/buttonOK"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_margin="5dp"
+        android:layout_weight="1.2"
+        android:background="@drawable/custom_button_blue"
+        android:gravity="center"
+        android:text="O  K"
+        android:textColor="@color/white" />
+
+</LinearLayout>

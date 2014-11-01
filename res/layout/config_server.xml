@@ -1,0 +1,123 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical" >
+    
+    <LinearLayout 
+        android:id="@+id/container"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="10dp"
+        android:orientation="vertical"
+        android:focusable="true"
+        android:focusableInTouchMode="true">
+
+
+<!-- BT section -->
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@color/smalltittle"
+            android:gravity="center_vertical"
+            android:layout_marginTop="15dip"
+            android:paddingLeft="10dp"
+            android:text="@string/config_bt_zigbee_combo"
+            android:textColor="@color/smalltittleText"
+            android:textStyle="bold" />
+    
+        <Button
+            android:id="@+id/buttonSelectBTDevice"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="5dp"
+            android:layout_marginLeft="10dp"
+            android:layout_marginRight="10dp"
+            android:layout_marginBottom="5dp"
+            android:onClick="onClickBluetooth"
+            android:background="@drawable/custom_button_lblue"
+            android:text="@string/config_selBT" />
+    
+        <TextView
+            android:id="@+id/textViewBTAddr"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:text="-------"
+            android:textAppearance="?android:attr/textAppearanceMedium" />
+
+        <TableLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="5dp"
+            android:stretchColumns="*" >
+
+            <TableRow
+               android:layout_width="wrap_content"
+               android:layout_height="wrap_content" >
+                <Button
+                    android:id="@+id/buttonReadNode"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="10dp"
+                    android:layout_marginRight="10dp"
+                    android:onClick="onClickReadNode"
+                    android:background="@drawable/custom_button_lblue"
+                    android:text="@string/zigbee_read_node" />
+                
+                <Button
+                    android:id="@+id/buttonWriteNode"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="10dp"
+                    android:layout_marginRight="10dp"
+                    android:onClick="onClickWriteNode"
+                    android:background="@drawable/custom_button_lblue"
+                    android:text="@string/zigbee_write_node" />
+            </TableRow>
+        </TableLayout>
+        
+        <include
+            layout="@layout/config_zigbee_node" />
+
+<!--
+        <LinearLayout
+            android:id="@+id/containerZigBee"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:visibility="visible" >
+        
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="15dip"
+                android:background="@color/smalltittle"
+                android:gravity="center_vertical"
+                android:paddingLeft="10dp"
+                android:text="@string/config_zigbee"
+                android:textColor="@color/smalltittleText"
+                android:textStyle="bold" />
+        
+            <Button
+                android:id="@+id/buttonZigBeeDevice"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_margin="10dp"
+                android:onClick="onClickZigBee"
+                android:background="@drawable/custom_button_lblue"
+                android:text="@string/config_sel_zigbee" />
+        
+            <TextView
+                android:id="@+id/textViewZigBeeAddr"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="center"
+                android:text=" "
+                android:textAppearance="?android:attr/textAppearanceMedium" />
+        </LinearLayout>
+  -->
+
+    </LinearLayout>
+    
+</ScrollView>

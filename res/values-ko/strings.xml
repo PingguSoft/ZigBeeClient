@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">ZigBee Client</string>
+
+    <string name="not_connected">장치가 연결되지 않았습니다.</string>
+    <string name="bt_not_enabled_leaving">블루투스가 활성화되지 않았습니다.</string>
+    <string name="title_connecting">연결 중...</string>
+    <string name="title_connected_to">연결됨: </string>
+    <string name="title_not_connected">연결되지 않았습니다.</string>
+    <string name="connected_to">연결 되었습니다</string>
+    <string name="unable_connect">장치를 연결할 수 없습니다</string>
+    <string name="connection_lost">장치 연결이 끊어졌습니다</string>
+
+    <string name="scanning">장치를 스캔 중...</string>
+    <string name="select_device">연결하는 장치를 선택</string>
+    <string name="none_paired">No devices have been paired</string>
+    <string name="none_found">아무 장치가 없습니다</string>
+
+    <!-- main -->
+    <string name="main_btcon_config_section">설  정</string>
+    <string name="main_server_config">서버 설정</string>
+    <string name="main_server_config_desc">서버 어플리케이션 환경을 설정합니다</string>
+    <string name="main_device_config">원격 디바이스 설정</string>
+    <string name="main_device_config_desc">원격 디바이스를 설정합니다</string>
+    
+    <string name="main_etc_section">기  타</string>
+    <string name="main_purchase">구  매</string>
+    <string name="main_purchase_desc">어플리케이션을 구매합니다</string>
+    <string name="main_notice">알  림</string>
+    <string name="main_notice_desc">버전 이력을 보여줍니다</string>
+    <string name="main_quit">종  료</string>
+    <string name="main_quit_desc">어플리케이션을 종료합니다</string>
+    <string name="main_inapp_fail">구매 오류</string>
+    <string name="main_inapp_auth_fail">검증 실패</string>
+    <string name="main_inapp_success">구매해 주셔서 감사합니다 !</string>
+    <string name="main_inapp_setting_fail">어플리케이션 결제 확인 오류 !</string>
+    <string name="main_inapp_query_fail">어플리케이션 결제 확인 오류 !</string>
+    <string name="main_free_timeout">무료 평가 기간(24시간)이 지났습니다</string>
+    <string name="main_authorized">개발자 폰 !!</string>
+    
+    <string name="main_service_started">ZigBee Server가 시작됐습니다"</string>
+
+    <!-- BTCon Config -->
+    <string name="config_bt_zigbee_combo">Bluetooth ZigBee Combo</string>
+    <string name="config_selBT">Bluetooth 장치 선택</string>
+    <string name="config_zigbee">ZigBee 설정</string>
+    <string name="config_sel_zigbee">ZigBee 장치 선택</string>
+    <string name="config_zigbee_devices">ZigBee 디바이스</string>
+    <string name="config_zigbee_scan">스캔</string>
+
+    
+    <!-- Bluetooth Config -->
+    <string name="bt_config_paired_devices">Paring된 장치</string>
+    <string name="bt_config_other_devices">검색된 블루투스 장치</string>
+    <string name="bt_config_scan">장치 스캔</string>
+    
+    <!-- ZigBee Config -->
+    <string name="zigbee_read_node">설정 읽기</string>
+    <string name="zigbee_write_node">설정 기록</string>
+    <string name="zigbee_node">ZigBee 노드 설정</string>
+    <string name="zigbee_node_name">노드 이름</string>
+    <string name="zigbee_node_type">노드 타입</string>
+    <string name="zigbee_node_addr">노드 주소</string>
+    <string name="zigbee_gpio">ZigBee GPIO 설정</string>
+    <string name="zigbee_gpio_no">GPIO</string>
+    <string name="zigbee_gpio_pin">PIN</string>
+    <string name="zigbee_gpio_mode">MODE</string>
+    <string name="zigbee_gpio_name">NAME</string>
+    <string name="zigbee_gpio_usage">USAGE</string>
+    
+    <!--  TTS -->
+    <string name="tts_data_err">"데이터 전송 에러"</string>
+    <string name="tts_aux">"억스"</string>
+    <string name="tts_batt_warn1">"배터리 1단계 경고"</string>
+    <string name="tts_batt_warn2">"배터리 2단계 경고"</string>
+    <string name="tts_batt_crit">"배터리 위험"</string>
+    <string name="tts_arm">"시동 걸림"</string>
+    <string name="tts_disarm">"시동 꺼짐"</string>
+    
+    
+    <string name="main_client">Client</string>
+    
+</resources>
