@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
+    <PreferenceCategory android:title="@string/pref_server">
+        <EditTextPreference  
+            android:dialogTitle="@string/pref_serveraddr_title"
+            android:dialogMessage="@string/pref_serveraddr_message"
+            android:key="prefServerAddr"
+            android:title="@string/pref_serveraddr_title"
+            android:summary="@string/pref_serveraddr_summary"
+            android:defaultValue="127.0.0.1"/>
+        <EditTextPreference  
+            android:dialogTitle="@string/pref_serverport_title"
+            android:dialogMessage="@string/pref_serverport_message"
+            android:key="prefServerPort"
+            android:title="@string/pref_serverport_title"
+            android:summary="@string/pref_serverport_summary"
+            android:defaultValue="8080"
+            android:inputType="number"/>
+    </PreferenceCategory>
+    
+</PreferenceScreen>

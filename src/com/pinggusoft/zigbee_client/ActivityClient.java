@@ -28,6 +28,9 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
 import android.os.Messenger;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.webkit.WebView;
@@ -39,16 +42,11 @@ import android.widget.TextView;
 import android.widget.Toast;
     
 public class ActivityClient extends Activity {
-    private static final int    RC_REQUEST = 10001;
-    private static final String SKU_PRODUCT = "com.pinggusoft.btcon";
+    private static final int SETTINGS_REQUEST_CODE = 1001;
 
     private ClientApp       mApp;
-    private boolean         mIsPurchased = true;
-    private IabHelper       mHelper;
-    
     private ArrayList<Item> items = new ArrayList<Item>();
     private ListView        mListView = null;
-    private EntryItem       mPurchaseItem = null;
     private RPCClient       mRPC = null;
     private int             mIntNodeCtr = 0;
     
@@ -57,40 +55,36 @@ public class ActivityClient extends Activity {
         super.onCreate(savedInstanceState);
         mApp =  (ClientApp)getApplication();
         setContentView(R.layout.main_list_view);
-
-        String base64EncodedPublicKey = "MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAowry+1jfMdRZlz2gDrc3gkzwKtNyuFdwm+Pk2y+IyE2D67m17I4ZAq0zlhkJSU2NrSA6Su/3GPXVv412zIk3vveMVS4SwqTBhDVfJQek9YRWPVNOMJZBVA5j+C1T5ekdippU1I6fG/q1+NmdInE5xdk4K1bBNlHYZL40eZ6X2ejf7zi9RIthTPqM7c+Nl52GInbPRT0nlFgC9HUGDIMegiLtYiWSdlTFTUz5/Re8/ieM3bH6KXF289ZbsExZTJXvM6Io44D5Pf41XeSiVhGktvs8Chk0YZQ/h5S/4G+WpQ7TlgXhmsPQ91RVR49sUKLk1rh44urQbJ5kpptd2OLwOQIDAQAB";
-        LogUtil.e("Creating IAB helper.");
-        mHelper = new IabHelper(this, base64EncodedPublicKey);
-
-        // enable debug logging (for a production application, you should set this to false).
-        mHelper.enableDebugLogging(BuildConfig.DEBUG ? true : false);
-
-        // Start setup. This is asynchronous and the specified listener
-        // will be called once setup completes.
-        LogUtil.e("Starting setup.");
-        mHelper.startSetup(new IabHelper.OnIabSetupFinishedListener() {
-            public void onIabSetupFinished(IabResult result) {
-                LogUtil.e("Setup finished.");
-
-                if (!result.isSuccess()) {
-                    // Oh noes, there was a problem.
-                    complain(getResources().getString(R.string.main_inapp_setting_fail) + " " + result);
-                    mIsPurchased = false;
-                    return;
-                }
-
-                // Have we been disposed of in the meantime? If so, quit.
-                if (mHelper == null) 
-                    return;
-
-                // IAB is fully set up. Now, let's get an inventory of stuff we own.
-                LogUtil.e("Setup successful. Querying inventory.");
-                mHelper.queryInventoryAsync(mGotInventoryListener);
-            }
-        });
-        
         mRPC = new RPCClient(getApplicationContext(), new RPCHandler(this));
-//        composeScreen();
+    }
+    
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        MenuInflater inflater = getMenuInflater();
+        inflater.inflate(R.menu.contextmenu, menu);
+        
+        return true;
+    }
+    
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        boolean result = true;
+        
+        switch (item.getItemId()) {
+            case R.id.menuPreference:{
+                startActivityForResult(new Intent(this, ActivitySettings.class), SETTINGS_REQUEST_CODE);
+                break;
+            }
+            case R.id.menuAbout:{
+                //displayAboutDialog();
+                break;
+            }
+            default:{
+                result = super.onOptionsItemSelected(item);
+            }
+        }
+        
+        return result;
     }
     
     private int getResID(int usage, int val) {
@@ -130,16 +124,6 @@ public class ActivityClient extends Activity {
             }
         }
 
-/*        
-        mPurchaseItem = new EntryItem(R.drawable.icon_purchase, getString(R.string.main_purchase), 
-                getString(R.string.main_purchase_desc), ID_PURCHASE);
-        items.add(mPurchaseItem);
-        items.add(new EntryItem(R.drawable.icon_notice, getString(R.string.main_notice), 
-                getString(R.string.main_notice_desc), ID_NOTICE));
-        items.add(new EntryItem(R.drawable.icon_quit, getString(R.string.main_quit), 
-                getString(R.string.main_quit_desc), ID_QUIT));
-*/
-        
         EntryAdapter adapter = new EntryAdapter(this, items, R.layout.list_item_entry_main);
 
         mListView.setAdapter(adapter);
@@ -200,8 +184,6 @@ public class ActivityClient extends Activity {
             TextView abTitle = (TextView) findViewById(titleId);
             abTitle.setTextColor(Color.WHITE);
         }
-        
-        updateButtons(mIsPurchased);
     }
     
     @Override
@@ -213,13 +195,6 @@ public class ActivityClient extends Activity {
     @Override
     public void onDestroy() {
         super.onDestroy();
-        
-        // very important:
-        LogUtil.e("Destroying helper.");
-        if (mHelper != null) {
-            mHelper.dispose();
-            mHelper = null;
-        }
     }
     
     private Dialog mDialog = null;
@@ -356,126 +331,7 @@ public class ActivityClient extends Activity {
         }
     }
     
-    
-    /*
-    ***************************************************************************
-    * In-App Billing
-    ***************************************************************************
-    */
-    public void onClickPurchase(View v) {
-        LogUtil.e("Buy button clicked; launching purchase flow for upgrade.");
-
-        /* TODO: for security, generate your payload here for verification. See the comments on
-         *        verifyDeveloperPayload() for more info. Since this is a SAMPLE, we just use
-         *        an empty string, but on a production mApp you should carefully generate this. */
-        String payload = String.valueOf(System.currentTimeMillis());
-
-        mHelper.launchPurchaseFlow(this, SKU_PRODUCT, RC_REQUEST,
-                mPurchaseFinishedListener, payload);
-    }
-    
-    // Listener that's called when we finish querying the items and subscriptions we own
-    IabHelper.QueryInventoryFinishedListener mGotInventoryListener = new IabHelper.QueryInventoryFinishedListener() {
-        public void onQueryInventoryFinished(IabResult result, Inventory inventory) {
-            LogUtil.e("Query inventory finished.");
-
-            // Have we been disposed of in the meantime? If so, quit.
-            if (mHelper == null) return;
-
-            // Is it a failure?
-            if (result.isFailure()) {
-                complain(getResources().getString(R.string.main_inapp_query_fail) + " : " + result);
-                return;
-            }
-
-            LogUtil.e("Query inventory was successful.");
-
-            /*
-             * Check for items we own. Notice that for each purchase, we check
-             * the developer payload to see if it's correct! See
-             * verifyDeveloperPayload().
-             */
-            Purchase premiumPurchase = inventory.getPurchase(SKU_PRODUCT);
-            mIsPurchased = (premiumPurchase != null && verifyDeveloperPayload(premiumPurchase));
-            LogUtil.e("Product is " + (mIsPurchased ? "Purchased" : "not purchased"));
-            updateButtons(mIsPurchased);
-        }
-    };
-    
-    @Override
-    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        LogUtil.e("onActivityResult(" + requestCode + "," + resultCode + "," + data);
-        if (mHelper == null) return;
-
-        // Pass on the activity result to the helper for handling
-        if (!mHelper.handleActivityResult(requestCode, resultCode, data)) {
-            // not handled, so handle it ourselves (here's where you'd
-            // perform any handling of activity results not related to in-mApp
-            // billing...
-            super.onActivityResult(requestCode, resultCode, data);
-        }
-        else {
-            LogUtil.e("onActivityResult handled by IABUtil.");
-        }
-    }
-
-    /** Verifies the developer payload of a purchase. */
-    boolean verifyDeveloperPayload(Purchase p) {
-        String payload = p.getDeveloperPayload();
-
-        /*
-         * TODO: verify that the developer payload of the purchase is correct. It will be
-         * the same one that you sent when initiating the purchase.
-         *
-         * WARNING: Locally generating a random string when starting a purchase and
-         * verifying it here might seem like a good approach, but this will fail in the
-         * case where the user purchases an item on one device and then uses your mApp on
-         * a different device, because on the other device you will not have access to the
-         * random string you originally generated.
-         *
-         * So a good developer payload has these characteristics:
-         *
-         * 1. If two different users purchase an item, the payload is different between them,
-         *    so that one user's purchase can't be replayed to another user.
-         *
-         * 2. The payload must be such that you can verify it even when the mApp wasn't the
-         *    one who initiated the purchase flow (so that items purchased by the user on
-         *    one device work on other devices owned by the user).
-         *
-         * Using your own server to store and verify developer payloads across mApp
-         * installations is recommended.
-         */
-        LogUtil.e("Payload:" + payload);
-
-        return true;
-    }
-
-    // Callback for when a purchase is finished
-    IabHelper.OnIabPurchaseFinishedListener mPurchaseFinishedListener = new IabHelper.OnIabPurchaseFinishedListener() {
-        public void onIabPurchaseFinished(IabResult result, Purchase purchase) {
-            LogUtil.e("Purchase finished: " + result + ", purchase: " + purchase);
-
-            // if we were disposed of in the meantime, quit.
-            if (mHelper == null) return;
-
-            if (result.isFailure()) {
-                complain(getResources().getString(R.string.main_inapp_fail) + " : " + result);
-                return;
-            }
-            if (!verifyDeveloperPayload(purchase)) {
-                complain(getResources().getString(R.string.main_inapp_fail) + " : " + getResources().getString(R.string.main_inapp_auth_fail));
-                return;
-            }
-
-            LogUtil.e("Purchase successful.");
-            if (purchase.getSku().equals(SKU_PRODUCT)) {
-                alert(R.string.main_inapp_success);
-                mIsPurchased = true;
-                updateButtons(mIsPurchased);
-            }
-        }
-    };
-    
+   
     private void complain(String strMsg) {
         LogUtil.e(strMsg);
         alert(strMsg);
@@ -566,14 +422,6 @@ public class ActivityClient extends Activity {
         if(mApp.isAuthorized()) {
             alert(R.string.main_authorized);
             boolPurchased = true;
-        }
-
-        if (boolPurchased) {
-            //removeItemById(ID_PURCHASE);
-            mBoolRemoved = true;
-        } else if (mBoolRemoved) {
-            items.add(8, mPurchaseItem);
-            mBoolRemoved = false;
         }
 
         if (!boolPurchased && mApp.IsExpired()) {

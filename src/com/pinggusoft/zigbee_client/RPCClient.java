@@ -51,7 +51,7 @@ public class RPCClient {
         URL serverURL = null;
 
         try {
-            serverURL = new URL("http://127.0.0.1:8080/json");
+            serverURL = new URL("http://bluejune.iptime.org:7070/json");
         } catch (MalformedURLException e) {
         }
 
@@ -122,7 +122,7 @@ public class RPCClient {
                         case CMD_GET_NODE_CTR:
                             
                             resp = callRPC("getNodeCtr", null, msg.arg1);
-                            if (resp.indicatesSuccess())
+                            if (resp != null && resp.indicatesSuccess())
                                 lRet = (long)resp.getResult();
                             else
                                 lRet = -1;
@@ -135,7 +135,7 @@ public class RPCClient {
                             resp = callRPC("getNode", param, msg.arg1);
                             
                             Map<String, Object> res;
-                            if (resp.indicatesSuccess())
+                            if (resp != null && resp.indicatesSuccess())
                                 res = (Map<String, Object>)resp.getResult();
                             else
                                 res = null;
@@ -157,7 +157,7 @@ public class RPCClient {
                             param.put("id", msg.arg1);
                             param.put("value", msg.arg2);
                             resp = callRPC("asyncWriteGpio", param, msg.arg1);
-                            if (resp.indicatesSuccess())
+                            if (resp != null && resp.indicatesSuccess())
                                 lRet = (long)resp.getResult();
                             else
                                 lRet = -1;
@@ -168,7 +168,7 @@ public class RPCClient {
                             param.clear();
                             param.put("id", msg.arg1);
                             resp = callRPC("asyncReadGpio", param, msg.arg1);
-                            if (resp.indicatesSuccess())
+                            if (resp != null && resp.indicatesSuccess())
                                 lRet = (long)resp.getResult();
                             else
                                 lRet = -1;
@@ -179,7 +179,7 @@ public class RPCClient {
                             param.clear();
                             param.put("id", msg.arg1);
                             resp = callRPC("asyncReadAnalog", param, msg.arg1);
-                            if (resp.indicatesSuccess())
+                            if (resp != null && resp.indicatesSuccess())
                                 lRet = (long)resp.getResult();
                             else
                                 lRet = -1;
