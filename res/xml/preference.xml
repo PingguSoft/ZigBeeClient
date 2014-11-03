@@ -14,7 +14,7 @@
             android:key="prefServerPort"
             android:title="@string/pref_serverport_title"
             android:summary="@string/pref_serverport_summary"
-            android:defaultValue="8080"
+            android:defaultValue="7070"
             android:inputType="number"/>
     </PreferenceCategory>
     

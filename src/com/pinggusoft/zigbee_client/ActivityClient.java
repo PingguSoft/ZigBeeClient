@@ -48,14 +48,22 @@ public class ActivityClient extends Activity {
     private ArrayList<Item> items = new ArrayList<Item>();
     private ListView        mListView = null;
     private RPCClient       mRPC = null;
+    private RPCHandler      mRPCHandler = null;
     private int             mIntNodeCtr = 0;
     
+    /*
+     ******************************************************************************************************************
+     * 
+     ******************************************************************************************************************
+     */
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         mApp =  (ClientApp)getApplication();
         setContentView(R.layout.main_list_view);
-        mRPC = new RPCClient(getApplicationContext(), new RPCHandler(this));
+        mApp.removeNodes();
+        mRPCHandler = new RPCHandler(this);
+        mRPC = new RPCClient(getApplicationContext(), mRPCHandler);
     }
     
     @Override
@@ -87,6 +95,64 @@ public class ActivityClient extends Activity {
         return result;
     }
     
+    @Override
+    public void onStart() {
+        super.onStart();
+        LogUtil.e("onStart");
+        
+        String strVer = mApp.getInstVer();
+        String strPackVer = mApp.getPackageVer();
+        if (strVer == null || !strVer.equals(strPackVer)) {
+            mApp.setInstVer(strPackVer);
+            onClickNotice(null);
+        }
+    }
+
+    @Override
+    public synchronized void onResume() {
+        super.onResume();
+        LogUtil.e("onResume");
+        if (ClientApp.isAboveICS()) {
+            ActionBar bar = getActionBar();
+            bar.setBackgroundDrawable(new ColorDrawable(Color.parseColor("#222222")));
+            int titleId = getResources().getIdentifier("action_bar_title", "id", "android");
+            TextView abTitle = (TextView) findViewById(titleId);
+            abTitle.setTextColor(Color.WHITE);
+        }
+    }
+    
+    @Override
+    public synchronized void onPause() {
+        super.onPause();
+        LogUtil.e("onPause");
+    }
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+    }
+    
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        
+        switch(requestCode) {
+            case SETTINGS_REQUEST_CODE:
+                LogUtil.d("resultCode:%d", resultCode);
+                if (resultCode == RESULT_OK) {
+                    mApp.removeNodes();
+                    mRPCHandler.obtainMessage(RPCClient.CMD_RPC_READY, 0, 0, null).sendToTarget();
+                }
+                break;
+        }
+    }
+    
+    
+    /*
+     ******************************************************************************************************************
+     * 
+     ******************************************************************************************************************
+     */
     private int getResID(int usage, int val) {
         switch(usage) {
         case ZigBeeNode.TYPE_INPUT_TOUCH:
@@ -160,43 +226,6 @@ public class ActivityClient extends Activity {
         });
     }
     
-    @Override
-    public void onStart() {
-        super.onStart();
-        LogUtil.e("onStart");
-        
-        String strVer = mApp.getInstVer();
-        String strPackVer = mApp.getPackageVer();
-        if (strVer == null || !strVer.equals(strPackVer)) {
-            mApp.setInstVer(strPackVer);
-            onClickNotice(null);
-        }
-    }
-
-    @Override
-    public synchronized void onResume() {
-        super.onResume();
-        LogUtil.e("onResume");
-        if (ClientApp.isAboveICS()) {
-            ActionBar bar = getActionBar();
-            bar.setBackgroundDrawable(new ColorDrawable(Color.parseColor("#222222")));
-            int titleId = getResources().getIdentifier("action_bar_title", "id", "android");
-            TextView abTitle = (TextView) findViewById(titleId);
-            abTitle.setTextColor(Color.WHITE);
-        }
-    }
-    
-    @Override
-    public synchronized void onPause() {
-        super.onPause();
-        LogUtil.e("onPause");
-    }
-
-    @Override
-    public void onDestroy() {
-        super.onDestroy();
-    }
-    
     private Dialog mDialog = null;
     public void onClickNotice(View v) {
         mDialog = new Dialog(this);
@@ -250,9 +279,12 @@ public class ActivityClient extends Activity {
                 break;
                 
             case RPCClient.CMD_GET_NODE_CTR:
-                if (msg.arg2 < 0)
+                if (msg.arg2 < 0) {
+                    parent.mApp.removeNodes();
+                    parent.composeScreen();
                     break;
-                
+                }
+
                 parent.mIntNodeCtr = msg.arg2;
                 for (int i = 0; i < msg.arg2; i++)
                     parent.mRPC.asyncGetNode(i);
@@ -411,35 +443,6 @@ public class ActivityClient extends Activity {
         int pos = findItemPosbyId(id);
         if (pos > 0) {
             items.remove(pos);
-        }
-    }
-    
-    boolean mBoolRemoved = false;
-    
-    private void updateButtons(boolean boolPurchased) {
-        boolean boolEnable = false;
-
-        if(mApp.isAuthorized()) {
-            alert(R.string.main_authorized);
-            boolPurchased = true;
-        }
-
-        if (!boolPurchased && mApp.IsExpired()) {
-            alert(R.string.main_free_timeout);
-            boolEnable = false;
-        } else {
-            if (mApp.getBTDevice() == null || mApp.getBTDevice().length() == 0) {
-                boolEnable = false;
-            } else {
-                boolEnable = true;
-            }
-        }
-        
-        //setEnableItemById(ID_DEVICE_SETTING, boolEnable);
-        if (mListView != null) {
-            EntryAdapter adapter = (EntryAdapter)mListView.getAdapter();
-            if (adapter != null)
-                adapter.notifyDataSetChanged();
         }
     }
 }

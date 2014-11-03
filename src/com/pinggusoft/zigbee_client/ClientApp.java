@@ -1,11 +1,9 @@
 package com.pinggusoft.zigbee_client;
 
-import java.io.BufferedOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.OutputStream;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.text.SimpleDateFormat;
@@ -13,10 +11,7 @@ import java.util.Arrays;
 import java.util.Date;
 import java.util.Locale;
 import java.util.Vector;
-
 import android.app.Application;
-import android.bluetooth.BluetoothAdapter;
-import android.bluetooth.BluetoothDevice;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.Editor;
@@ -25,28 +20,38 @@ import android.os.Build;
 import android.os.Environment;
 import android.preference.PreferenceManager;
 import android.telephony.TelephonyManager;
-import android.util.Log;
 
 public class ClientApp extends Application {
-    private final static String KEY_BTDEVICE           = "KEY_BTDEVICE";
-    private final static String KEY_INSTALL_TIME       = "KEY_INSTALL_TIME";
-    private final static String KEY_INSTALL_VER        = "KEY_INSTALL_VER";
-
-    public String   m_strBTDevice = null;
-    public String   m_strBTAddr = null;
-    private long    m_lFirstInstallTime;
-    private String  m_strVer;
-    private SharedPreferences m_spBTCon;
-    private Editor  m_editorBTCon;
+    public final static String KEY_INSTALL_TIME     = "prefInstallTime";
+    public final static String KEY_INSTALL_VER      = "prefInstallVer";
+    public static final String  KEY_SERVER_PORT     = "prefServerPort";
+    public static final String  KEY_SERVER_ADDR     = "prefServerAddr";
+    
+    private long                mLongFIT;
+    private SharedPreferences   mPrefApp;
+    private Editor              mPrefEditorApp;
     
     @Override
     public void onCreate() {
         super.onCreate();
        
         LogUtil.initialize(this);
-        m_spBTCon = PreferenceManager.getDefaultSharedPreferences(this);
-        m_editorBTCon = m_spBTCon.edit();
+        mPrefApp = PreferenceManager.getDefaultSharedPreferences(this);
+        mPrefEditorApp = mPrefApp.edit();
         readSettings();
+    }
+    
+    @Override
+    public void onTerminate() {
+        super.onTerminate();
+    }
+    
+    public int getServerPort() {
+        return Integer.parseInt(mPrefApp.getString(KEY_SERVER_PORT, "7070"));
+    }
+    
+    public String getServerAddr() {
+        return mPrefApp.getString(KEY_SERVER_ADDR, "127.0.0.1");
     }
     
     private String getTimeString(long lTime) {
@@ -58,16 +63,12 @@ public class ClientApp extends Application {
     }
     
     public void readSettings() {
-        m_strBTDevice = m_spBTCon.getString(KEY_BTDEVICE, null);
-        if (m_strBTDevice != null)
-            m_strBTAddr = m_strBTDevice.substring(m_strBTDevice.length() - 17);
-        
         getInstalledTime();
-        m_strVer = m_spBTCon.getString(KEY_INSTALL_VER, null);
+        
     }
     
     private void getInstalledTime() {
-        long lInstallTimeSP = m_spBTCon.getLong(KEY_INSTALL_TIME, -1);
+        long lInstallTimeSP = mPrefApp.getLong(KEY_INSTALL_TIME, -1);
         
         ByteBuffer  byteBuf = ByteBuffer.allocate(8);
         byteBuf.order(ByteOrder.LITTLE_ENDIAN);
@@ -79,23 +80,23 @@ public class ClientApp extends Application {
                 os.read(byteBuf.array());
                 if (os != null)
                     os.close();
-                m_lFirstInstallTime = byteBuf.getLong();
-                LogUtil.e("installed time file : " + getTimeString(m_lFirstInstallTime));
+                mLongFIT = byteBuf.getLong();
+                LogUtil.e("installed time file : " + getTimeString(mLongFIT));
             } catch (IOException e) {
                 e.printStackTrace();
             }
 
-            LogUtil.e("SP:" + lInstallTimeSP + ", FILE:" + m_lFirstInstallTime);
+            LogUtil.e("SP:" + lInstallTimeSP + ", FILE:" + mLongFIT);
             
             if (lInstallTimeSP == -1) {
                 // app is un-installed, use time of .noctb
-                m_editorBTCon.putLong(KEY_INSTALL_TIME, m_lFirstInstallTime);
-                m_editorBTCon.commit();
-                LogUtil.e("app in un-installed, use file :" + getTimeString(m_lFirstInstallTime));
-            } else if (lInstallTimeSP != m_lFirstInstallTime) {
+                mPrefEditorApp.putLong(KEY_INSTALL_TIME, mLongFIT);
+                mPrefEditorApp.commit();
+                LogUtil.e("app in un-installed, use file :" + getTimeString(mLongFIT));
+            } else if (lInstallTimeSP != mLongFIT) {
                 // different time, use min time
-                m_lFirstInstallTime = Math.min(m_lFirstInstallTime, lInstallTimeSP);
-                LogUtil.e("different time use min time:" + getTimeString(m_lFirstInstallTime));
+                mLongFIT = Math.min(mLongFIT, lInstallTimeSP);
+                LogUtil.e("different time use min time:" + getTimeString(mLongFIT));
             }
         } else {
             LogUtil.e("file doesn't exist");
@@ -105,16 +106,16 @@ public class ClientApp extends Application {
 
             if (lInstallTimeSP == -1) {
                 // real first install
-                m_lFirstInstallTime = System.currentTimeMillis();
-                m_editorBTCon.putLong(KEY_INSTALL_TIME,  m_lFirstInstallTime);
-                m_editorBTCon.commit();
-                LogUtil.e("real first install!!:" + getTimeString(m_lFirstInstallTime));
+                mLongFIT = System.currentTimeMillis();
+                mPrefEditorApp.putLong(KEY_INSTALL_TIME,  mLongFIT);
+                mPrefEditorApp.commit();
+                LogUtil.e("real first install!!:" + getTimeString(mLongFIT));
             } else {
                 // .noctb is removed
-                m_lFirstInstallTime = lInstallTimeSP;
-                LogUtil.e("file is removed!!, Use SP:" + getTimeString(m_lFirstInstallTime));
+                mLongFIT = lInstallTimeSP;
+                LogUtil.e("file is removed!!, Use SP:" + getTimeString(mLongFIT));
             }
-            byteBuf.putLong(m_lFirstInstallTime);
+            byteBuf.putLong(mLongFIT);
 
             try {
                 FileOutputStream os = new FileOutputStream(file);
@@ -128,40 +129,16 @@ public class ClientApp extends Application {
     }
 
     public void saveSettings() {
-        m_editorBTCon.putString(KEY_BTDEVICE, m_strBTDevice);
-        m_editorBTCon.commit();
-        
-        if (m_strBTDevice != null)
-            m_strBTAddr = m_strBTDevice.substring(m_strBTDevice.length() - 17);
-    }
-
-    @Override
-    public void onTerminate() {
-        super.onTerminate();
-    }
-    
-    public void setBTDevice(String device) {
-        m_strBTDevice = device;
-
-        if (m_strBTDevice != null)
-            m_strBTAddr = m_strBTDevice.substring(m_strBTDevice.length() - 17);
-    }
-    
-    public String getBTDevice() {
-        return m_strBTDevice;
-    }
-    
-    public String getBTAddr() {
-        return m_strBTAddr;
+        mPrefEditorApp.commit();
     }
     
     public boolean IsExpired() {
         getInstalledTime();
         
-        long diff  = System.currentTimeMillis() - m_lFirstInstallTime;
+        long diff  = System.currentTimeMillis() - mLongFIT;
         long hours = diff / (1000 * 60 * 60);   
 
-        LogUtil.e(String.format("inst:%d,  diff:%d, hour:%d", m_lFirstInstallTime, diff, hours));
+        LogUtil.e(String.format("inst:%d,  diff:%d, hour:%d", mLongFIT, diff, hours));
         if (hours > 24)
             return true;
         
@@ -169,19 +146,18 @@ public class ClientApp extends Application {
     }
 
     public void testExpire() {
-        m_lFirstInstallTime -= (1000 * 60 * 60 * 24);
-        m_editorBTCon.putLong(KEY_INSTALL_TIME,  m_lFirstInstallTime);
-        m_editorBTCon.commit();
+        mLongFIT -= (1000 * 60 * 60 * 24);
+        mPrefEditorApp.putLong(KEY_INSTALL_TIME,  mLongFIT);
+        mPrefEditorApp.commit();
     }
     
     public String getInstVer() {
-        return m_strVer;
+        return mPrefApp.getString(KEY_INSTALL_VER, null);
     }
     
     public void setInstVer(String strVer) {
-        m_strVer = strVer;
-        m_editorBTCon.putString(KEY_INSTALL_VER, m_strVer);
-        m_editorBTCon.commit();
+        mPrefEditorApp.putString(KEY_INSTALL_VER, strVer);
+        mPrefEditorApp.commit();
     }
     
     public String getPackageVer() {

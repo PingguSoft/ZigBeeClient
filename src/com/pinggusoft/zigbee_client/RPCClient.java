@@ -48,10 +48,12 @@ public class RPCClient {
     {
         JSONRPC2Request req;
         
-        URL serverURL = null;
-
+        URL         serverURL = null;
+        ClientApp   app = (ClientApp)mCtx.getApplicationContext();
+        int         serverPort = app.getServerPort();
+        String      strURL = String.format("http://%s:%d/json", app.getServerAddr(), serverPort);
         try {
-            serverURL = new URL("http://bluejune.iptime.org:7070/json");
+            serverURL = new URL(strURL);
         } catch (MalformedURLException e) {
         }
 
@@ -107,7 +109,7 @@ public class RPCClient {
             messageHandler.post(new Runnable() {
                 Map<String, Object> param = new HashMap<String,Object>();
                 JSONRPC2Response resp;
-                long lRet;
+                int nRet;
                 
                 @Override
                 public void run() {
@@ -123,10 +125,10 @@ public class RPCClient {
                             
                             resp = callRPC("getNodeCtr", null, msg.arg1);
                             if (resp != null && resp.indicatesSuccess())
-                                lRet = (long)resp.getResult();
+                                nRet = ((Long)resp.getResult()).intValue();
                             else
-                                lRet = -1;
-                            mHandler.obtainMessage(msg.what, msg.arg1, (int)lRet, null).sendToTarget();
+                                nRet = -1;
+                            mHandler.obtainMessage(msg.what, msg.arg1, nRet, null).sendToTarget();
                             break;
 
                         case CMD_GET_NODE:
@@ -158,10 +160,10 @@ public class RPCClient {
                             param.put("value", msg.arg2);
                             resp = callRPC("asyncWriteGpio", param, msg.arg1);
                             if (resp != null && resp.indicatesSuccess())
-                                lRet = (long)resp.getResult();
+                                nRet = ((Long)resp.getResult()).intValue();
                             else
-                                lRet = -1;
-                            mHandler.obtainMessage(msg.what, msg.arg1, (int)lRet, null).sendToTarget();
+                                nRet = -1;
+                            mHandler.obtainMessage(msg.what, msg.arg1, nRet, null).sendToTarget();
                             break;
                             
                         case CMD_READ_GPIO:
@@ -169,10 +171,10 @@ public class RPCClient {
                             param.put("id", msg.arg1);
                             resp = callRPC("asyncReadGpio", param, msg.arg1);
                             if (resp != null && resp.indicatesSuccess())
-                                lRet = (long)resp.getResult();
+                                nRet = ((Long)resp.getResult()).intValue();
                             else
-                                lRet = -1;
-                            mHandler.obtainMessage(msg.what, msg.arg1, (int)lRet, null).sendToTarget();
+                                nRet = -1;
+                            mHandler.obtainMessage(msg.what, msg.arg1, nRet, null).sendToTarget();
                             break;
                             
                         case CMD_READ_ANALOG:
@@ -180,10 +182,10 @@ public class RPCClient {
                             param.put("id", msg.arg1);
                             resp = callRPC("asyncReadAnalog", param, msg.arg1);
                             if (resp != null && resp.indicatesSuccess())
-                                lRet = (long)resp.getResult();
+                                nRet = ((Long)resp.getResult()).intValue();
                             else
-                                lRet = -1;
-                            mHandler.obtainMessage(msg.what, msg.arg1, (int)lRet, null).sendToTarget();
+                                nRet = -1;
+                            mHandler.obtainMessage(msg.what, msg.arg1, nRet, null).sendToTarget();
                             break;
                         }
                     } while (msg != null);
