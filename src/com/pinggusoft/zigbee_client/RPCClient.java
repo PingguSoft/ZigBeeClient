@@ -72,7 +72,7 @@ public class RPCClient {
         }
 //        if (response.indicatesSuccess())
 //            LogUtil.d("CLIENT RECEIVED : " + response.getResult());
-        if (!response.indicatesSuccess())
+        if (response != null && !response.indicatesSuccess())
             LogUtil.d(response.getError().getMessage());
         
        

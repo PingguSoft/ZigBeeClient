@@ -325,11 +325,11 @@ public class ActivityClient extends Activity {
                     parent.setResById(msg.arg1, resID);
                 } else {
                     node.setGpioValue(msg.arg2);
-                    LogUtil.d(String.format("NID:%x GPIO=%s", msg.arg1, node.getGpioValue()));
+                    LogUtil.d(String.format("NID:%x GPIO=%s", nid, node.getGpioValue()));
                     for (int i = 0; i < node.getMaxGPIO(); i++) {
                         val   = node.getGpioValue(i);
                         resID = parent.getResID(node.getGpioUsage(i), val);
-                        parent.setResById((nid << 16) | i, resID);
+                        parent.setResById(ZigBeeNode.buildID(nid, i), resID);
                     }
                 }
                 break;
