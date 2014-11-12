@@ -185,7 +185,7 @@ public class ActivityClient extends Activity {
                 int nResID = getResID(node.getGpioUsage(j), 0);
                 if (nResID > 0) {
                     items.add(new EntryItem(nResID, node.getGpioName(j), 
-                            " ", (i << 16) | j));
+                            " ", ZigBeeNode.buildID(i, j)));
                 }
             }
         }
@@ -207,8 +207,8 @@ public class ActivityClient extends Activity {
                         it = (EntrySelItem)item;
                     }
 
-                    int nNode = item.id >> 16;
-                    int gpio = (int)(item.id & 0xffff);
+                    int nNode = ZigBeeNode.getNIDFromID(item.id);
+                    int gpio  = ZigBeeNode.getGpioFromID(item.id);
                     ZigBeeNode node = mApp.getNode(nNode); 
                     LogUtil.d("CLICK : " + node.getName() + ", GPIO:" + gpio);
                     
@@ -302,8 +302,8 @@ public class ActivityClient extends Activity {
                 if (parent.mApp.getNodeCtr() == parent.mIntNodeCtr) {
                     parent.composeScreen();
                     for (int i = 0; i < parent.mIntNodeCtr; i++) {
-                        parent.mRPC.asyncReadGpio((i << 16) | (0xffff));
-                        parent.mRPC.asyncReadAnalog((i << 16) | (0xffff));
+                        parent.mRPC.asyncReadGpio(ZigBeeNode.buildID(i, 0xff));
+                        parent.mRPC.asyncReadAnalog(ZigBeeNode.buildID(i, 0xff));
                     }
                 }
                 break;
@@ -312,8 +312,9 @@ public class ActivityClient extends Activity {
                 if (msg.arg2 < 0)
                     break;
                 
-                nid  = (int)(msg.arg1 >> 16);
-                gpio = (int)(msg.arg1 & 0xffff);
+                
+                nid  = ZigBeeNode.getNIDFromID(msg.arg1);
+                gpio = ZigBeeNode.getGpioFromID(msg.arg1);
                 node = parent.mApp.getNode(nid);
                 
                 if (gpio < node.getMaxGPIO()) {
@@ -337,8 +338,8 @@ public class ActivityClient extends Activity {
                 if (msg.arg2 < 0)
                     break;
                 
-                nid  = (int)(msg.arg1 >> 16);
-                gpio = (int)(msg.arg1 & 0xffff);
+                nid  = ZigBeeNode.getNIDFromID(msg.arg1);
+                gpio = ZigBeeNode.getGpioFromID(msg.arg1);
                 node = parent.mApp.getNode(nid);
                 node.setGpioValue(gpio, msg.arg2);
                 break;
@@ -347,8 +348,8 @@ public class ActivityClient extends Activity {
                 if (msg.arg2 < 0)
                     break;
 
-                nid  = msg.arg1 >> 16;
-                gpio = (int)(msg.arg1 & 0xffff);
+                nid  = ZigBeeNode.getNIDFromID(msg.arg1);
+                gpio = ZigBeeNode.getGpioFromID(msg.arg1);
                 node = parent.mApp.getNode(nid);
                 
                 if (gpio < node.getMaxGPIO()) {

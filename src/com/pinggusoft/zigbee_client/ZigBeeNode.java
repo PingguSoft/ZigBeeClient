@@ -387,8 +387,20 @@ public class ZigBeeNode {
             setGpioMode(i, (int)byteBuf.get());     // gpio mode
             byteBuf.get(bufDst, 0, 16);             // gpio name
             setGpioName(i, new String(bufDst).trim());
-            LogUtil.i("GPIO" + i + ", USAGE:" + getGpioUsage(i) + ", NAME:" + getGpioName(i));
+//            LogUtil.i("GPIO" + i + ", MODE:" + getGpioMode(i) + ", NAME:" + getGpioName(i));
         }
         return 1;
+    }
+    
+    public static int getNIDFromID(int id) {
+        return (int)id >> 16;
+    }
+    
+    public static int getGpioFromID(int id) {
+        return (int)((id >> 8) & 0xff);
+    }
+    
+    public static int buildID(int nid, int gpio) {
+        return (int)((nid << 16) | (gpio << 8));
     }
 }
