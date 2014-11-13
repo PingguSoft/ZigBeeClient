@@ -7,6 +7,7 @@
     
     <!-- menu -->
     <string name="menu_settings">설정</string>
+    <string name="menu_rule_config">룰 편집</string>
     <string name="menu_about">About</string>
     
     <string name="pref_server">서버 설정</string>
@@ -17,4 +18,30 @@
     <string name="pref_serverport_title">서버 포트</string>
     <string name="pref_serverport_message">서버 포트를 입력해 주세요</string>
     <string name="pref_serverport_summary">서버 포트를 입력해 주세요</string>
+
+    <!-- Rule -->
+    <string name="config_rule_output">출력 포트</string>
+    <string name="config_rule_operation">동  작</string>
+    <string name="config_rule_input">입  력</string>
+    <string name="config_rule_condition">조  건</string>
+    <string name="config_rule_operator">연산</string>
+    <string name="config_rule_input_time">시간</string>
+    <string name="config_rule_time">시간 설정</string>
+    <string name="config_rule_time_set">동작 시간</string>
+    <string name="config_rule_time_days">요 일</string>
+    <string name="config_rule_time_day_sun">일</string>
+    <string name="config_rule_time_day_mon">월</string>
+    <string name="config_rule_time_day_tue">화</string>
+    <string name="config_rule_time_day_wed">수</string>
+    <string name="config_rule_time_day_thu">목</string>
+    <string name="config_rule_time_day_fri">금</string>
+    <string name="config_rule_time_day_sat">토</string>
+    <string name="config_rule_thermo">시간 설정</string>
+    <string name="config_rule_thermo_min">최소 온도</string>
+    <string name="config_rule_thermo_max">최대 온도</string>    
+    <string name="config_rule_done">완 료</string>
+    <string name="config_rule_cancel">취 소</string>
+    <string name="config_rule_action_off">끔</string>
+    <string name="config_rule_action_on">켬</string>
+    <string name="config_rule_action_toggle">전환</string>
 </resources>

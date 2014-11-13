@@ -35,6 +35,10 @@ public class RPCClient {
     public  static final int    CMD_READ_GPIO         = CMD_BASE + 5;
     public  static final int    CMD_WRITE_GPIO        = CMD_BASE + 6;
     public  static final int    CMD_READ_ANALOG       = CMD_BASE + 7;
+    public  static final int    CMD_GET_RULE_CTR      = CMD_BASE + 8;
+    public  static final int    CMD_GET_RULE          = CMD_BASE + 9;
+    public  static final int    CMD_SET_RULE          = CMD_BASE + 10;
+    public  static final int    CMD_FILE_RULE         = CMD_BASE + 11;
     
     public RPCClient(Context ctx, Handler handler) {
         mCtx     = ctx;
@@ -84,8 +88,22 @@ public class RPCClient {
      * MessageManager
      ******************************************************************************************************************
      */
-    public byte[] objectToBytArray( Object ob ){
-        return ((ob.toString()).getBytes());
+    private byte[] getByteArray(JSONArray array) {
+        byte[] buf = new byte[array.size()];
+        for (int i = 0; i < array.size(); i++) {
+            Long val = (Long)array.get(i);
+            buf[i] = val.byteValue();
+        }
+        
+        return buf;
+    }
+    
+    private JSONArray getJSONArray(byte[] byteBuf) {
+        JSONArray array = new JSONArray();
+        for (int i = 0; i < byteBuf.length; i++) {
+            array.add(i, byteBuf[i]);
+        }
+        return array;
     }
     
     private class MessageManager implements Runnable {
@@ -108,7 +126,9 @@ public class RPCClient {
         private void consumeAsync() {
             messageHandler.post(new Runnable() {
                 Map<String, Object> param = new HashMap<String,Object>();
+                Map<String, Object> res;
                 JSONRPC2Response resp;
+                byte[] buf = null;
                 int nRet;
                 
                 @Override
@@ -123,7 +143,7 @@ public class RPCClient {
                         switch(msg.what) {
                         case CMD_GET_NODE_CTR:
                             
-                            resp = callRPC("getNodeCtr", null, msg.arg1);
+                            resp = callRPC("getNodeCtr", null, msg.what);
                             if (resp != null && resp.indicatesSuccess())
                                 nRet = ((Long)resp.getResult()).intValue();
                             else
@@ -134,22 +154,16 @@ public class RPCClient {
                         case CMD_GET_NODE:
                             param.clear();
                             param.put("idx", msg.arg1);
-                            resp = callRPC("getNode", param, msg.arg1);
+                            resp = callRPC("getNode", param, msg.what);
                             
-                            Map<String, Object> res;
                             if (resp != null && resp.indicatesSuccess())
                                 res = (Map<String, Object>)resp.getResult();
                             else
                                 res = null;
 
-                            byte[] buf = null;
+                            buf = null;
                             if (res != null) {
-                                JSONArray array = (JSONArray)res.get("node");
-                                buf = new byte[array.size()];
-                                for (int i = 0; i < array.size(); i++) {
-                                    Long val = (Long)array.get(i);
-                                    buf[i] = val.byteValue();
-                                }
+                                buf = getByteArray((JSONArray)res.get("node"));
                             }
                             mHandler.obtainMessage(msg.what, msg.arg1, 0, buf).sendToTarget();
                             break;
@@ -158,7 +172,7 @@ public class RPCClient {
                             param.clear();
                             param.put("id", msg.arg1);
                             param.put("value", msg.arg2);
-                            resp = callRPC("asyncWriteGpio", param, msg.arg1);
+                            resp = callRPC("asyncWriteGpio", param, msg.what);
                             if (resp != null && resp.indicatesSuccess())
                                 nRet = ((Long)resp.getResult()).intValue();
                             else
@@ -169,7 +183,7 @@ public class RPCClient {
                         case CMD_READ_GPIO:
                             param.clear();
                             param.put("id", msg.arg1);
-                            resp = callRPC("asyncReadGpio", param, msg.arg1);
+                            resp = callRPC("asyncReadGpio", param, msg.what);
                             if (resp != null && resp.indicatesSuccess())
                                 nRet = ((Long)resp.getResult()).intValue();
                             else
@@ -180,7 +194,56 @@ public class RPCClient {
                         case CMD_READ_ANALOG:
                             param.clear();
                             param.put("id", msg.arg1);
-                            resp = callRPC("asyncReadAnalog", param, msg.arg1);
+                            resp = callRPC("asyncReadAnalog", param, msg.what);
+                            if (resp != null && resp.indicatesSuccess())
+                                nRet = ((Long)resp.getResult()).intValue();
+                            else
+                                nRet = -1;
+                            mHandler.obtainMessage(msg.what, msg.arg1, nRet, null).sendToTarget();
+                            break;
+                            
+                        case CMD_GET_RULE_CTR:
+                            resp = callRPC("getRuleCtr", null, msg.what);
+                            if (resp != null && resp.indicatesSuccess())
+                                nRet = ((Long)resp.getResult()).intValue();
+                            else
+                                nRet = -1;
+                            mHandler.obtainMessage(msg.what, msg.arg1, nRet, null).sendToTarget();
+                            break;
+                            
+                        case CMD_GET_RULE:
+                            param.clear();
+                            param.put("idx", msg.arg1);
+                            resp = callRPC("getRule", param, msg.what);
+                            
+                            if (resp != null && resp.indicatesSuccess())
+                                res = (Map<String, Object>)resp.getResult();
+                            else
+                                res = null;
+
+                            buf = null;
+                            if (res != null) {
+                                buf = getByteArray((JSONArray)res.get("rule"));
+                            }
+                            mHandler.obtainMessage(msg.what, msg.arg1, 0, buf).sendToTarget();
+                            break;
+                            
+                        case CMD_SET_RULE:
+                            param.clear();
+                            param.put("rule", (byte[])msg.obj);
+                            resp = callRPC("setRule", param, msg.what);
+
+                            if (resp != null && resp.indicatesSuccess())
+                                nRet = ((Long)resp.getResult()).intValue();
+                            else
+                                nRet = -1;
+
+                            mHandler.obtainMessage(msg.what, msg.arg1, nRet, null).sendToTarget();
+                            break;
+                            
+                        case CMD_FILE_RULE:
+                            param.put("save", msg.arg1);
+                            resp = callRPC("fileRule", param, msg.what);
                             if (resp != null && resp.indicatesSuccess())
                                 nRet = ((Long)resp.getResult()).intValue();
                             else
@@ -222,5 +285,21 @@ public class RPCClient {
     
     public void asyncReadAnalog(int id) {
         mMessageManager.offer(Message.obtain(null, CMD_READ_ANALOG, id, 0, null));
+    }
+    
+    public void asyncGetRuleCtr() {
+        mMessageManager.offer(Message.obtain(null, CMD_GET_RULE_CTR, 0, 0, null));
+    }
+    
+    public void asyncGetRule(int idx) {
+        mMessageManager.offer(Message.obtain(null, CMD_GET_RULE, idx, 0, null));
+    }
+    
+    public void asyncSetRule(byte[] buf) {
+        mMessageManager.offer(Message.obtain(null, CMD_SET_RULE, 0, 0, buf));
+    }
+    
+    public void asyncFileRule(boolean save) {
+        mMessageManager.offer(Message.obtain(null, CMD_FILE_RULE, save ? 1 : 0, 0, null));
     }
 }

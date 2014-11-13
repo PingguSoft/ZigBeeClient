@@ -46,6 +46,10 @@
             </intent-filter>
         </activity>
         
+        <activity android:name=".ActivityRuleConfig"
+                  android:label="@string/menu_rule_config">
+        </activity>
+        
     </application>
 
     

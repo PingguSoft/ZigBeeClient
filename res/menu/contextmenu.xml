@@ -4,6 +4,11 @@
 		android:id="@+id/menuPreference"
 		android:icon="@android:drawable/ic_menu_preferences"
 		android:title="@string/menu_settings"/>
+    <item 
+        android:id="@+id/menuRuleConfig"
+        android:icon="@android:drawable/ic_menu_preferences"
+        android:title="@string/menu_rule_config"/>
+    
 	<item 
 		android:id="@+id/menuAbout"
 		android:icon="@android:drawable/ic_menu_help"

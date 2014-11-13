@@ -43,6 +43,7 @@ import android.widget.Toast;
     
 public class ActivityClient extends Activity {
     private static final int SETTINGS_REQUEST_CODE = 1001;
+    private static final int RULE_REQUEST_CODE     = 1002;
 
     private ClientApp       mApp;
     private ArrayList<Item> items = new ArrayList<Item>();
@@ -50,6 +51,7 @@ public class ActivityClient extends Activity {
     private RPCClient       mRPC = null;
     private RPCHandler      mRPCHandler = null;
     private int             mIntNodeCtr = 0;
+    private int             mIntRuleCtr = 0;
     
     /*
      ******************************************************************************************************************
@@ -87,6 +89,12 @@ public class ActivityClient extends Activity {
                 //displayAboutDialog();
                 break;
             }
+            
+            case R.id.menuRuleConfig:
+                mRPC.asyncFileRule(false);
+                //startActivityForResult(new Intent(this, ActivityRuleConfig.class), 0);
+                break;
+            
             default:{
                 result = super.onOptionsItemSelected(item);
             }
@@ -112,13 +120,14 @@ public class ActivityClient extends Activity {
     public synchronized void onResume() {
         super.onResume();
         LogUtil.e("onResume");
-        if (ClientApp.isAboveICS()) {
-            ActionBar bar = getActionBar();
-            bar.setBackgroundDrawable(new ColorDrawable(Color.parseColor("#222222")));
-            int titleId = getResources().getIdentifier("action_bar_title", "id", "android");
-            TextView abTitle = (TextView) findViewById(titleId);
-            abTitle.setTextColor(Color.WHITE);
-        }
+
+//        if (ClientApp.isAboveICS()) {
+//            ActionBar bar = getActionBar();
+//            bar.setBackgroundDrawable(new ColorDrawable(Color.parseColor("#555555")));
+//            int titleId = getResources().getIdentifier("action_bar_title", "id", "android");
+//            TextView abTitle = (TextView) findViewById(titleId);
+//            abTitle.setTextColor(Color.WHITE);
+//        }
     }
     
     @Override
@@ -142,6 +151,16 @@ public class ActivityClient extends Activity {
                 if (resultCode == RESULT_OK) {
                     mApp.removeNodes();
                     mRPCHandler.obtainMessage(RPCClient.CMD_RPC_READY, 0, 0, null).sendToTarget();
+                }
+                break;
+                
+            case RULE_REQUEST_CODE:
+                if (resultCode == RESULT_OK) {
+                    for (int i = 0; i < RuleManager.getOutputPortCnt(); i++) {
+                        RuleOutput output = RuleManager.getAt(i);
+                        mRPC.asyncSetRule(output.serialize());
+                    }
+                    mRPC.asyncFileRule(true);
                 }
                 break;
         }
@@ -226,14 +245,15 @@ public class ActivityClient extends Activity {
         });
     }
     
-    private Dialog mDialog = null;
+    
     public void onClickNotice(View v) {
-        mDialog = new Dialog(this);
-        mDialog.setTitle(R.string.main_notice);
-        mDialog.setContentView(R.layout.main_notice);
-        mDialog.setCancelable(false);
+        final Dialog dlgNotice = new Dialog(this);
+        
+        dlgNotice.setTitle(R.string.main_notice);
+        dlgNotice.setContentView(R.layout.main_notice);
+        dlgNotice.setCancelable(false);
 
-        final WebView view = (WebView)mDialog.findViewById(R.id.webView);
+        final WebView view = (WebView)dlgNotice.findViewById(R.id.webView);
         
         String strURL;
         if (Locale.getDefault().getLanguage().equals("ko"))
@@ -243,20 +263,21 @@ public class ActivityClient extends Activity {
         view.loadUrl(strURL);
         view.setBackgroundColor(0x00000000);
         
-        final Button btnOK = (Button)mDialog.findViewById(R.id.buttonOK);
+        final Button btnOK = (Button)dlgNotice.findViewById(R.id.buttonOK);
         btnOK.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View v) {
-                mDialog.dismiss();
+                dlgNotice.dismiss();
             }
         });
 
-        mDialog.show();
+        dlgNotice.show();
     }
 
 
     static class RPCHandler extends Handler {
         private WeakReference<ActivityClient> mParent;
+        private int mRuleCtr;
         
         RPCHandler(ActivityClient parent) {
             mParent = new WeakReference<ActivityClient>(parent);
@@ -271,6 +292,8 @@ public class ActivityClient extends Activity {
             int         resID;
             int         gpio;
             int         nid;
+            byte[]      buf;
+            RuleOutput  ruleOutput;
             
             switch (msg.what) {
             case RPCClient.CMD_RPC_READY:
@@ -294,7 +317,7 @@ public class ActivityClient extends Activity {
                 if (msg.obj == null)
                     break;
                 
-                byte[] buf = (byte[])msg.obj;
+                buf = (byte[])msg.obj;
                 node = new ZigBeeNode();
                 node.deserialize(buf);
                 parent.mApp.addNode(node, false);
@@ -311,7 +334,6 @@ public class ActivityClient extends Activity {
             case RPCClient.CMD_READ_GPIO:
                 if (msg.arg2 < 0)
                     break;
-                
                 
                 nid  = ZigBeeNode.getNIDFromID(msg.arg1);
                 gpio = ZigBeeNode.getGpioFromID(msg.arg1);
@@ -358,6 +380,36 @@ public class ActivityClient extends Activity {
                     LogUtil.d(String.format("NID:%d GPIO=%d ADC=%d", nid, gpio, node.getGpioAnalog(gpio)));
                 } else {
                     LogUtil.d(String.format("NID:%d ADCs=%s", nid, node.getGpioAnalog()));
+                }
+                break;
+
+                
+            case RPCClient.CMD_FILE_RULE:
+                if (msg.arg1 == 0)
+                    parent.mRPC.asyncGetRuleCtr();
+                break;
+
+            case RPCClient.CMD_GET_RULE_CTR:
+                parent.mIntRuleCtr = msg.arg2;
+                mRuleCtr = msg.arg2;
+                for (int i = 0; i < msg.arg2; i++)
+                    parent.mRPC.asyncGetRule(i);
+                if (mRuleCtr == 0)
+                    parent.startActivityForResult(new Intent(parent, ActivityRuleConfig.class), RULE_REQUEST_CODE);
+                break;
+
+            case RPCClient.CMD_GET_RULE:
+                if (msg.obj == null)
+                    break;
+                
+                buf = (byte[])msg.obj;
+                ruleOutput = new RuleOutput();
+                ruleOutput.deserialize(buf);
+                RuleManager.put(ruleOutput.getID(), ruleOutput);
+                
+                if ((--mRuleCtr) == 0) {
+                    LogUtil.d("START !!!");
+                    parent.startActivityForResult(new Intent(parent, ActivityRuleConfig.class), RULE_REQUEST_CODE);
                 }
                 break;
             }

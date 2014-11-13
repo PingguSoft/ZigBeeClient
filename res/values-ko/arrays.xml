@@ -20,10 +20,38 @@
 
     <string-array name="zigbee_gpio_usage">
         <item>사용안함</item>
-        <item>모니터링</item>
-        <item>조명</item>
-        <item>스위치</item>
-        <item>아날로그</item>
+        <item>터치(I)</item>
+        <item>스위치(I)</item>
+        <item>아날로그(I)</item>
+        <item>조명(O)</item>
         <item>특정기능</item>
     </string-array>
+    
+    <string-array name="config_rule_action">
+        <item>끔</item>
+        <item>켬</item>
+        <item>전환</item>
+    </string-array>
+    
+    <string-array name="config_rule_input">
+        <item>IN7</item>
+        <item>ADC0</item>
+        <item>Time</item>
+    </string-array>
+    
+    <string-array name="config_rule_condition_gpio">
+        <item>LOW</item>
+        <item>HIGH</item>
+    </string-array>
+    
+    <string-array name="config_rule_condition_analog">
+        <item>RANGE</item>
+    </string-array>
+
+    <string-array name="config_rule_operator">
+        <item>AND</item>
+        <item>OR</item>
+    </string-array>    
+    
+    
 </resources>

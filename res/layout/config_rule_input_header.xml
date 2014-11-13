@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+    <TableLayout  xmlns:android="http://schemas.android.com/apk/res/android"
+        android:id="@+id/tableRuleInput"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="15dp">
+
+        <TableRow 
+           android:layout_width="match_parent"
+           android:layout_height="wrap_content"
+           android:layout_marginLeft="3dp"
+           android:layout_marginRight="3dp">
+           
+            <TextView
+                android:layout_width="0dp"
+                android:layout_weight="3.5"
+                android:layout_height="35dp"
+                android:background="#3F777777"
+                android:layout_marginRight="1dp"
+                android:layout_marginTop="1dp"
+                android:layout_marginBottom="1dp"
+                android:gravity="center"
+                android:text="@string/config_rule_input" />
+    
+            <TextView
+                android:layout_width="0dp"
+                android:layout_weight="3.5"
+                android:layout_height="35dp"
+                android:background="#3F777777"
+                android:layout_margin="1dp"
+                android:gravity="center"
+                android:text="@string/config_rule_condition" />
+            
+            <TextView
+                android:layout_width="0dp"
+                android:layout_weight="2"
+                android:layout_height="35dp"
+                android:background="#3F777777"
+                android:layout_margin="1dp"
+                android:gravity="center"
+                android:text="@string/config_rule_operator"/>
+    
+            <Button
+                android:id="@+id/buttonPlus"
+                style="?android:attr/buttonStyleSmall"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_vertical"
+                android:layout_marginTop="1dp"
+                android:minHeight="35dp"
+                android:minWidth="35dp"
+                android:text="+" />
+    
+            <Button
+                style="?android:attr/buttonStyleSmall"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_vertical"
+                android:layout_marginTop="1dp"
+                android:background="#00777777"
+                android:minHeight="35dp"
+                android:minWidth="35dp" />
+        </TableRow>
+
+    </TableLayout>

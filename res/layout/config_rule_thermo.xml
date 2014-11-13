@@ -1,0 +1,130 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:minWidth="350dp" 
+    android:orientation="vertical" >
+
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:layout_marginTop="5dp"
+        android:paddingLeft="10dp"
+        android:background="@color/smalltittle"
+        android:gravity="center_vertical"
+        android:text="@string/config_rule_thermo_min"
+        android:textColor="@color/tittleText"
+        android:textSize="20sp"
+        android:textStyle="bold" />
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="10dp">
+        <SeekBar
+            android:id="@+id/sliderThermoMin"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="10dp"
+            android:layout_marginRight="60dp"
+            android:gravity="center"
+            android:layout_gravity="center"
+            android:max="120"
+            android:progress="0"
+            android:secondaryProgress="0"
+            android:progressDrawable="@drawable/shape_progress"
+            android:thumb="@drawable/shape_thumb"/>
+
+        <TextView
+            android:id="@+id/textThermoMin"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentRight="true"
+            android:layout_centerVertical="true"
+            android:layout_marginRight="10dp"
+            android:text="-20"
+            android:textSize="20sp"
+            android:textStyle="bold" />
+    </RelativeLayout>
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="20dp"
+        android:layout_gravity="center"
+        android:paddingLeft="10dp"
+        android:background="@color/smalltittle"
+        android:gravity="center_vertical"
+        android:text="@string/config_rule_thermo_max"
+        android:textColor="@color/tittleText"
+        android:textSize="20sp"
+        android:textStyle="bold" />
+    
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="10dp">
+        <SeekBar
+            android:id="@+id/sliderThermoMax"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="10dp"
+            android:layout_marginRight="60dp"
+            android:gravity="center"
+            android:layout_gravity="center"
+            android:max="120"
+            android:progress="0"
+            android:secondaryProgress="0"
+            android:progressDrawable="@drawable/shape_progress"
+            android:thumb="@drawable/shape_thumb"/>
+
+        <TextView
+            android:id="@+id/textThermoMax"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentRight="true"
+            android:layout_centerVertical="true"
+            android:layout_marginRight="10dp"
+            android:text="120"
+            android:textSize="20sp"
+            android:textStyle="bold" />
+    </RelativeLayout>
+    
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="10dp" >
+
+        <Button
+            android:id="@+id/buttonCancel"
+            android:layout_width="100dp"
+            android:layout_height="wrap_content"
+            android:layout_gravity="right"
+            android:layout_marginBottom="5dip"
+            android:layout_marginLeft="20dp"
+            android:background="@drawable/custom_button_green"
+            android:onClick="onClickDone"
+            android:text="@string/config_rule_cancel"
+            android:textColor="@color/white"
+            android:textStyle="bold" />
+
+        <Button
+            android:id="@+id/buttonDone"
+            android:layout_width="100dp"
+            android:layout_height="wrap_content"
+            android:layout_alignBaseline="@+id/buttonCancel"
+            android:layout_alignBottom="@+id/buttonCancel"
+            android:layout_alignParentRight="true"
+            android:layout_marginRight="20dp"
+            android:background="@drawable/custom_button_green"
+            android:onClick="onClickDone"
+            android:text="@string/config_rule_done"
+            android:textColor="@color/white"
+            android:textStyle="bold" />
+
+    </RelativeLayout>
+
+
+</LinearLayout>

@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+    <TableRow xmlns:android="http://schemas.android.com/apk/res/android"
+       android:layout_width="match_parent"
+       android:layout_height="wrap_content">
+
+        <Spinner
+            android:id="@+id/spinnerGpioInput"
+            style="android:spinnerStyle"
+            android:layout_width="0dp"
+            android:layout_weight="3.5"
+            android:layout_height="40dp"
+            android:layout_marginTop="1dp"
+            android:layout_marginBottom="1dp"
+            android:layout_marginLeft="3dp"
+            android:layout_marginRight="1dp"
+            android:drawSelectorOnTop="true"
+            android:background="@drawable/shape_spinner"
+            android:gravity="center" />
+        
+        <Spinner
+            android:id="@+id/spinnerCondition"
+            style="android:spinnerStyle"
+            android:layout_width="0dp"
+            android:layout_weight="3.5"
+            android:layout_height="40dp"
+            android:layout_marginTop="1dp"
+            android:layout_marginBottom="1dp"
+            android:layout_marginLeft="1dp"
+            android:layout_marginRight="1dp"
+            android:drawSelectorOnTop="true"
+            android:entries="@array/config_rule_condition_gpio"
+            android:gravity="center"
+            android:background="@drawable/shape_spinner"
+            android:visibility="visible" />
+        
+        <Button
+            android:id="@+id/buttonRangeTime"
+            style="?android:attr/buttonStyleSmall"
+            android:layout_width="0dp"
+            android:layout_height="40dp"
+            android:layout_weight="3.5"
+            android:text="Range"
+            android:visibility="gone" />
+        
+        <Spinner
+            android:id="@+id/spinnerOperator"
+            style="android:spinnerStyle"
+            android:layout_width="0dp"
+            android:layout_weight="2"
+            android:layout_height="40dp"
+            android:layout_marginTop="1dp"
+            android:layout_marginBottom="1dp"
+            android:layout_marginLeft="1dp"
+            android:layout_marginRight="1dp"
+            android:drawSelectorOnTop="true"
+            android:entries="@array/config_rule_operator"
+            android:background="@drawable/shape_spinner"
+            android:gravity="center"/>
+
+        <Button
+            style="?android:attr/buttonStyleSmall"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_vertical"
+            android:layout_margin="1dp"
+            android:background="#00777777"
+            android:minHeight="35dp"
+            android:minWidth="35dp"
+            android:textSize="14sp" />
+
+        <Button
+            android:id="@+id/buttonMinus"
+            style="?android:attr/buttonStyleSmall"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_vertical"
+            android:layout_margin="1dp"
+            android:minHeight="35dp"
+            android:minWidth="35dp"
+            android:text="-" />
+    
+    </TableRow>     
