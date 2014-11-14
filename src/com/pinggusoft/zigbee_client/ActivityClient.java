@@ -128,6 +128,14 @@ public class ActivityClient extends Activity {
 //            TextView abTitle = (TextView) findViewById(titleId);
 //            abTitle.setTextColor(Color.WHITE);
 //        }
+        
+        if (mApp.getNodeCtr() == mIntNodeCtr) {
+            LogUtil.d("REQUEST GPIO STATUS");
+            for (int i = 0; i < mApp.getNodeCtr(); i++) {
+                mRPC.asyncReadGpio(ZigBeeNode.buildID(i, 0xff));
+                mRPC.asyncReadAnalog(ZigBeeNode.buildID(i, 0xff));
+            }
+        }
     }
     
     @Override
@@ -326,7 +334,12 @@ public class ActivityClient extends Activity {
                     parent.composeScreen();
                     for (int i = 0; i < parent.mIntNodeCtr; i++) {
                         parent.mRPC.asyncReadGpio(ZigBeeNode.buildID(i, 0xff));
-                        parent.mRPC.asyncReadAnalog(ZigBeeNode.buildID(i, 0xff));
+                        //parent.mRPC.asyncReadAnalog(ZigBeeNode.buildID(i, 0xff));
+                        int start = node.getAnalogGpioRange() & 0xff;
+                        int end   = (node.getAnalogGpioRange() >> 8) & 0xff;
+                        for (int j = start; j <= end; j++) {
+                            parent.mRPC.asyncReadAnalog(ZigBeeNode.buildID(i, j));
+                        }
                     }
                 }
                 break;
@@ -378,8 +391,6 @@ public class ActivityClient extends Activity {
                     node.setGpioAnalog(gpio, msg.arg2);
                     parent.setSubTitleById(msg.arg1, String.format("ADC=%d", node.getGpioAnalog(gpio)));
                     LogUtil.d(String.format("NID:%d GPIO=%d ADC=%d", nid, gpio, node.getGpioAnalog(gpio)));
-                } else {
-                    LogUtil.d(String.format("NID:%d ADCs=%s", nid, node.getGpioAnalog()));
                 }
                 break;
 

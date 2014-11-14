@@ -267,6 +267,10 @@ public class ZigBeeNode {
         return GPIO_CNT;
     }
     
+    public int getAnalogGpioRange() {
+        return (14 << 8) | (9);
+    }
+    
     public static int getPinNo(int gpio) {
         return GPIO_PINS[gpio];
     }
