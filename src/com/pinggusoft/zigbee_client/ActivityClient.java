@@ -204,15 +204,24 @@ public class ActivityClient extends Activity {
         
         for (int i = 0; i < mIntNodeCtr; i++) {
             ZigBeeNode node = mApp.getNode(i);
-            
-            items.add(new SectionItem(node.getName() + " [" + node.getAddr() + "]"));
-            
+  
+            int nCtr = 0;
             for (int j = 0; j < node.getMaxGPIO(); j++) {
-                LogUtil.d("GPIO:%d, USAGE:%d", j, node.getGpioUsage(j));
                 int nResID = getResID(node.getGpioUsage(j), 0);
-                if (nResID > 0) {
-                    items.add(new EntryItem(nResID, node.getGpioName(j), 
-                            " ", ZigBeeNode.buildID(i, j)));
+                if (nResID > 0)
+                    nCtr++;
+            }            
+            
+            if (nCtr > 0) {
+                items.add(new SectionItem(node.getName())); // + " [" + node.getAddr() + "]"));
+                
+                for (int j = 0; j < node.getMaxGPIO(); j++) {
+    //                LogUtil.d("GPIO:%d, USAGE:%d", j, node.getGpioUsage(j));
+                    int nResID = getResID(node.getGpioUsage(j), 0);
+                    if (nResID > 0) {
+                        items.add(new EntryItem(nResID, node.getGpioName(j), 
+                                " ", ZigBeeNode.buildID(i, j)));
+                    }
                 }
             }
         }
