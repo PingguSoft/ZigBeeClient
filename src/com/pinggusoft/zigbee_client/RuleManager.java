@@ -6,6 +6,7 @@ import java.io.FileOutputStream;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.util.Arrays;
+import java.util.Calendar;
 
 import android.content.Context;
 import android.os.Handler;
@@ -138,5 +139,50 @@ public class RuleManager {
                 }
             }
         }
+    }
+    
+    synchronized public static long getNearestNextTime() {
+        Calendar calCur = Calendar.getInstance();
+        int hour     = calCur.get(Calendar.HOUR_OF_DAY);
+        int min      = calCur.get(Calendar.MINUTE);
+        int day      = calCur.get(Calendar.DAY_OF_WEEK) - 1;
+        int timeCur  = RuleInput.buildTime(day, hour, min);
+        int nextTime = 0;
+        int diffTime = 0;
+        int selTime = -1;
+        int minTime  = Integer.MAX_VALUE;
+        
+        LogUtil.d("getNearestNextTime!! %d:%d", hour, min);
+        for (int i = 0; i < getOutputPortCnt(); i++) {
+            RuleOutput output = getAt(i);
+            for (int j = 0; j < output.getRuleCnt(); j++) {
+                RuleInput input = output.getRuleAt(j);
+                if (input.getUsage() == RuleInput.USAGE_TIME) {
+                    
+                    nextTime = input.getNearestEvent(timeCur);
+                    LogUtil.d("CUR:%x, INPUT:%x", timeCur, nextTime);
+                    
+                    if (nextTime == -1)
+                        continue;
+
+                    diffTime = nextTime - timeCur;
+                    if (diffTime < minTime) {
+                        LogUtil.d("SEL : %x", nextTime);
+                        minTime = diffTime;
+                        selTime = nextTime;
+                    }
+                }
+            }
+        }
+        
+        day = RuleInput.getDay(selTime) - day;
+        Calendar calNext = calCur;
+        calNext.set(Calendar.HOUR_OF_DAY, RuleInput.getHour(selTime));
+        calNext.set(Calendar.MINUTE, RuleInput.getMinute(selTime));
+        calNext.set(Calendar.SECOND, 0);
+        calNext.add(Calendar.DAY_OF_MONTH, day);
+        LogUtil.d("getNearestNextTime : %d %d:%d", RuleInput.getDay(selTime), RuleInput.getHour(selTime), RuleInput.getMinute(selTime));
+        
+        return calNext.getTimeInMillis();
     }
 }

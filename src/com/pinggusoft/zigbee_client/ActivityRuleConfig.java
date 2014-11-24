@@ -120,7 +120,7 @@ public class ActivityRuleConfig extends Activity {
         
         for (int i = 0; i < 7; i++) {
             CheckBox cb = (CheckBox)dlgView.findViewById(R.id.checkBoxSun + i);
-            cb.setChecked(rule.getDay(i));
+            cb.setChecked(rule.isCheckedDay(i));
         }
         
         final Button btnCancel = (Button)dlgView.findViewById(R.id.buttonCancel);
@@ -138,7 +138,7 @@ public class ActivityRuleConfig extends Activity {
                 rule.setTime(tpStart.getCurrentHour(), tpStart.getCurrentMinute());
                 for (int i = 0; i < 7; i++) {
                     CheckBox cb = (CheckBox)dlgView.findViewById(R.id.checkBoxSun + i);
-                    rule.setDay(i, cb.isChecked());
+                    rule.checkDay(i, cb.isChecked());
                 }
                 ruleOutput.putRule(rowKey, rule);
                 dlgView.dismiss();

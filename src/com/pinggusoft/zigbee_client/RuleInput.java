@@ -59,12 +59,12 @@ public class RuleInput {
         nMax = max;
     }
     
-    public void setDay(int day, boolean check) {
+    public void checkDay(int day, boolean check) {
         if (0 <= day && day < boolDays.length)
             boolDays[day] = check;
     }
     
-    public boolean getDay(int day) {
+    public boolean isCheckedDay(int day) {
         if (0 <= day && day < boolDays.length)
             return boolDays[day];
         
@@ -97,6 +97,52 @@ public class RuleInput {
     
     public void setTime(int hour, int min) {
         nMin = (hour << 8) | min;
+    }
+    
+    public int getTime() {
+        return nMin;
+    }
+    
+    public int getNearestEvent(int daytime) {
+        int time;
+        int diff;
+        int min_time = Integer.MAX_VALUE;
+        int sel_time = -1;
+        
+        for (int i = 0; i < boolDays.length; i++) {
+            if (boolDays[i]) {
+                time = buildTime(i, getHour(), getMinute());
+                if (time < daytime) {
+                    time = buildTime(i + 7, getHour(), getMinute());
+                }
+                diff = time - daytime;
+                if (diff > 0 && diff < min_time) {
+                    min_time = diff;
+                    sel_time = time;
+                }
+            }
+        }
+        return sel_time;
+    }
+    
+    public static int buildTime(int hour, int min) {
+        return (hour << 8) | min;
+    }
+    
+    public static int buildTime(int day, int hour, int min) {
+        return (day << 16) | (hour << 8) | min;
+    }
+    
+    public static int getDay(int time) {
+        return (time >> 16) & 0xff;
+    }
+    
+    public static int getHour(int time) {
+        return (time >> 8) & 0xff;
+    }
+    
+    public static int getMinute(int time) {
+        return time & 0xff;
     }
     
     public void printRule() {
@@ -173,20 +219,15 @@ public class RuleInput {
             if (getMin() <= value && value <= getMax())
                 ret = true;
         } else if (usage == USAGE_TIME) {
-            Calendar c = Calendar.getInstance();
-            int      d = c.get(Calendar.DAY_OF_WEEK) - 1;
-            
-            if (getDay(d)) {
-                int h = c.get(Calendar.HOUR_OF_DAY);
-                int m = c.get(Calendar.MINUTE);
+            Calendar calCur = Calendar.getInstance();
+            Calendar calSet = calCur;
+            int      d = calCur.get(Calendar.DAY_OF_WEEK) - 1;
+
+            if (isCheckedDay(d)) {
+                calSet.set(1, 0, 1, getHour(), getMinute());
                 
-                Calendar  calCur = Calendar.getInstance();
-                calCur.set(0, 0, 1, h, m);
-                
-                Calendar  calSet = Calendar.getInstance();
-                calSet.set(0, 0, 1, getHour(), getMinute());
-                LogUtil.d("SET:" + String.valueOf(DateFormat.format("MMM d, EEE. aa h:mm", calSet)));
-                LogUtil.d("CUR:" + String.valueOf(DateFormat.format("MMM d, EEE. aa h:mm", calCur)));
+                LogUtil.d("SET:" + String.valueOf(DateFormat.format("MMM d, EEE. aa h:mm:ss", calSet)));
+                LogUtil.d("CUR:" + String.valueOf(DateFormat.format("MMM d, EEE. aa h:mm:ss", calCur)));
                 if (calCur.compareTo(calSet) == 0)
                     ret = true;
             }

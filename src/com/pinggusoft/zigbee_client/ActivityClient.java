@@ -202,6 +202,7 @@ public class ActivityClient extends Activity {
     public void composeScreen() {
         mListView = (ListView)findViewById(R.id.listView);
         
+        items.clear();
         for (int i = 0; i < mIntNodeCtr; i++) {
             ZigBeeNode node = mApp.getNode(i);
   
@@ -320,8 +321,10 @@ public class ActivityClient extends Activity {
                 
             case RPCClient.CMD_GET_NODE_CTR:
                 if (msg.arg2 < 0) {
+                    parent.mIntNodeCtr = 0;
                     parent.mApp.removeNodes();
                     parent.composeScreen();
+                    parent.complain("failed to connect to server");
                     break;
                 }
 
