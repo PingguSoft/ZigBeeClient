@@ -2,150 +2,145 @@ package com.pinggusoft.zigbee_client;
 
 import java.io.File;
 import java.io.FileOutputStream;
+import java.text.SimpleDateFormat;
 import java.util.Calendar;
-
-import com.pinggusoft.zigbee_client.BuildConfig;
+import java.util.Date;
+import java.util.Locale;
 
 import android.content.Context;
 import android.os.Environment;
 import android.util.Log;
 
 public class LogUtil {
-    
-    private static String m_strLogFileFolderPath = "";
-    private static String m_strLogFileName = "logs.txt";
-    private static boolean m_boolWrite = false;
+    private static String   m_strTag = null;
+    private static String   m_strLogFilePath = "";
+    private static String   m_strLogFileName = "logs.txt";
+    private static boolean  m_boolWrite = false;
+    private static boolean  m_boolInit  = false;
 
-    public static void initialize(Context context)
-    {
-        if (BuildConfig.DEBUG) {
-            m_strLogFileFolderPath = Environment.getExternalStorageDirectory () + "/PebbleNoti";
-            File AppFolder = new File(Environment.getExternalStorageDirectory () + "/PebbleNoti");
-            if(!AppFolder.exists()){
-                if (AppFolder.mkdirs()){
-                }
-                else{
-                }
-            } else {
-            }
-        }
+    public static void initialize(Context context) {
+        if (m_boolInit)
+            return;
+        
+        int nLastDot = context.getPackageName().lastIndexOf('.');
+        if (nLastDot > 0)
+            m_strTag = context.getPackageName().substring(nLastDot + 1);
+        else
+            m_strTag = "TAG";
+
+        if (!BuildConfig.DEBUG)
+            return;
+
+        m_strLogFilePath = Environment.getExternalStorageDirectory () + "/" + context.getPackageName();
+        File AppFolder = new File(m_strLogFilePath);
+        if (!AppFolder.exists())
+            AppFolder.mkdirs();
+        
+        m_boolInit = true;
     }
     
-    public static void reset()
-    {
-        if (BuildConfig.DEBUG) {
-            File file = new File(m_strLogFileFolderPath + "/" + m_strLogFileName);
-            file.delete();
-            
-            write("[E]", "LogUtil", "SnowFileLogUtil.reset()");
-        }
+    public static void reset() {
+        if (!BuildConfig.DEBUG)
+            return;
+
+        File file = new File(m_strLogFilePath + "/" + m_strLogFileName);
+        file.delete();
+        write("[E]", "LogUtil", "--------------- log reset ---------------");
     }
     
-    private static void write(String strLevel, String strTag, String strMessage, Object ... args)
-    {
-        if (m_boolWrite) {
-            String _strMessage = strMessage;
-            if ( (strMessage == null) || (strMessage.length() == 0) )
-                return;
-            
-            if (args.length != 0)
-            {
-                _strMessage = String.format(strMessage, args);
-            }
-            
-            _strMessage = strLevel + " " + getCurrentTime() + "\t" + strTag + "\t" + _strMessage + "\n";
-            
-            File file = new File(m_strLogFileFolderPath + "/" + m_strLogFileName);
-            FileOutputStream fos = null;
-            
-            try
-            {
-                fos = new FileOutputStream(file, true);
+    private static void write(String strLevel, String strTag, String strMessage, Object ... args) {
+        if (!m_boolWrite)
+            return;
+
+        String _strMessage = strMessage;
+        if ( (strMessage == null) || (strMessage.length() == 0) )
+            return;
+        
+        if (args.length != 0)
+            _strMessage = String.format(strMessage, args);
+        
+        _strMessage = strLevel + " " + getCurrentTime() + "\t" + strTag + "\t" + _strMessage + "\n";
+        
+        File file = new File(m_strLogFilePath + "/" + m_strLogFileName);
+        FileOutputStream fos = null;
+        
+        try {
+            fos = new FileOutputStream(file, true);
+            if (fos != null)
+                fos.write(_strMessage.getBytes());
+        } catch(Exception e) {
+            e.printStackTrace();
+        } finally {
+            try {
                 if (fos != null)
-                {
-                    fos.write(_strMessage.getBytes());
-                }
-                
-            }
-            catch(Exception e)
-            {
+                    fos.close();
+            } catch(Exception e) {
                 e.printStackTrace();
-            }
-            finally
-            {
-                try
-                {
-                    if (fos != null)
-                    {
-                        fos.close();
-                    }
-                }
-                catch(Exception e)
-                {
-                    e.printStackTrace();
-                }
             }
         }
     }
     
     public static void d(String strFormat, Object ... args) {
-        if (BuildConfig.DEBUG) {
-            if ( (strFormat == null) || (strFormat.length() == 0) )
-                return;
+        if (!BuildConfig.DEBUG)
+            return;
 
-            String strMessage = strFormat;
-            if (args.length != 0)
-                strMessage = String.format(strFormat, args);
-            
-            int nLine = Thread.currentThread().getStackTrace()[3].getLineNumber();
-            String strClass = Thread.currentThread().getStackTrace()[3].getClassName();
-            String strMethod = Thread.currentThread().getStackTrace()[3].getMethodName();
-            strClass = strClass.substring(strClass.lastIndexOf(".") + 1);
-            
-            String str = String.format("[%5d] %-20s %s", nLine, strMethod, strMessage);
-            Log.d(strClass, str);
-            write("[D]", strClass, str);
-        }
+        if ( (strFormat == null) || (strFormat.length() == 0) )
+            return;
+
+        String strMessage = strFormat;
+        if (args.length != 0)
+            strMessage = String.format(strFormat, args);
+        
+        int     nLine     = Thread.currentThread().getStackTrace()[3].getLineNumber();
+        String  strClass  = Thread.currentThread().getStackTrace()[3].getClassName();
+        String  strMethod = Thread.currentThread().getStackTrace()[3].getMethodName();
+        strClass = strClass.substring(strClass.lastIndexOf(".") + 1);
+        
+        String str = String.format("[%5d] %-50s %s", nLine, strClass + ":" + strMethod, strMessage);
+        Log.d(m_strTag, str);
+        write("[D]", m_strTag, str);
     }
 
     public static void i(String strFormat, Object ... args) {
-        if (BuildConfig.DEBUG) {
-            if ( (strFormat == null) || (strFormat.length() == 0) )
-                return;
+        if (!BuildConfig.DEBUG)
+            return;
+        
+        if ( (strFormat == null) || (strFormat.length() == 0) )
+            return;
 
-            String strMessage = strFormat;
-            if (args.length != 0)
-                strMessage = String.format(strFormat, args);
+        String strMessage = strFormat;
+        if (args.length != 0)
+            strMessage = String.format(strFormat, args);
 
-            int nLine = Thread.currentThread().getStackTrace()[3].getLineNumber();
-            String strClass = Thread.currentThread().getStackTrace()[3].getClassName();
-            String strMethod = Thread.currentThread().getStackTrace()[3].getMethodName();
-            strClass = strClass.substring(strClass.lastIndexOf(".") + 1);
-            
-            String str = String.format("[%5d] %-20s %s", nLine, strMethod, strMessage);
-            Log.i(strClass, str);
-            write("[I]", strClass, str);
-        }
+        int     nLine     = Thread.currentThread().getStackTrace()[3].getLineNumber();
+        String  strClass  = Thread.currentThread().getStackTrace()[3].getClassName();
+        String  strMethod = Thread.currentThread().getStackTrace()[3].getMethodName();
+        strClass = strClass.substring(strClass.lastIndexOf(".") + 1);
+        
+        String str = String.format("[%5d] %-50s %s", nLine, strClass + ":" + strMethod, strMessage);
+        Log.i(m_strTag, str);
+        write("[I]", m_strTag, str);
     }            
     
     public static void w(String strFormat, Object ... args) {
-        if (BuildConfig.DEBUG) {
-            if ( (strFormat == null) || (strFormat.length() == 0) )
-                return;
+        if (!BuildConfig.DEBUG)
+            return;
+        
+        if ( (strFormat == null) || (strFormat.length() == 0) )
+            return;
 
-            String strMessage = strFormat;
-            if (args.length != 0)
-                strMessage = String.format(strFormat, args);
-            
-            int nLine = Thread.currentThread().getStackTrace()[3].getLineNumber();
-            String strClass = Thread.currentThread().getStackTrace()[3].getClassName();
-            String strMethod = Thread.currentThread().getStackTrace()[3].getMethodName();
-            strClass = strClass.substring(strClass.lastIndexOf(".") + 1);
-            
-            String str = String.format("[%5d] %-20s %s", nLine, strMethod, strMessage);
-            Log.w(strClass, str);
-            write("[W]", strClass, str);
-        }
+        String strMessage = strFormat;
+        if (args.length != 0)
+            strMessage = String.format(strFormat, args);
+        
+        int     nLine     = Thread.currentThread().getStackTrace()[3].getLineNumber();
+        String  strClass  = Thread.currentThread().getStackTrace()[3].getClassName();
+        String  strMethod = Thread.currentThread().getStackTrace()[3].getMethodName();
+        strClass = strClass.substring(strClass.lastIndexOf(".") + 1);
+        
+        String str = String.format("[%5d] %-50s %s", nLine, strClass + ":" + strMethod, strMessage);
+        Log.w(m_strTag, str);
+        write("[W]", m_strTag, str);
     }            
     
     public static void e(String strFormat, Object ... args) {
@@ -156,17 +151,14 @@ public class LogUtil {
         if (args.length != 0)
             strMessage = String.format(strFormat, args);
         
-        int nLine = Thread.currentThread().getStackTrace()[3].getLineNumber();
-        String strClass = Thread.currentThread().getStackTrace()[3].getClassName();
-        String strMethod = Thread.currentThread().getStackTrace()[3].getMethodName();
+        int     nLine     = Thread.currentThread().getStackTrace()[3].getLineNumber();
+        String  strClass  = Thread.currentThread().getStackTrace()[3].getClassName();
+        String  strMethod = Thread.currentThread().getStackTrace()[3].getMethodName();
         strClass = strClass.substring(strClass.lastIndexOf(".") + 1);
         
-        String str = String.format("[%5d] %-20s %s", nLine, strMethod, strMessage);
-        Log.e(strClass, str);
-        
-        if (BuildConfig.DEBUG) {
-            write("[E]", strClass, str);
-        }
+        String str = String.format("[%5d] %-50s %s", nLine, strClass + ":" + strMethod, strMessage);
+        Log.e(m_strTag, str);
+        write("[E]", m_strTag, str);
     }
 
     private static String getCurrentTime()
@@ -179,5 +171,15 @@ public class LogUtil {
                                                             calendar.get(Calendar.MINUTE),
                                                             calendar.get(Calendar.SECOND));
         return strTime;
+    }
+    
+    public static String getFormattedTime(Context ctx, String format, long milliSeconds)
+    {
+        Date date = new Date(milliSeconds);
+        Locale locale = Locale.getDefault();
+        if (format == null)
+            format = "yyyy-MM-dd HH:mm:ss";
+        SimpleDateFormat sdf = new SimpleDateFormat(format, locale);
+        return sdf.format(date);
     }
 }

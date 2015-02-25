@@ -120,14 +120,6 @@ public class ActivityClient extends Activity {
     public synchronized void onResume() {
         super.onResume();
         LogUtil.e("onResume");
-
-//        if (ClientApp.isAboveICS()) {
-//            ActionBar bar = getActionBar();
-//            bar.setBackgroundDrawable(new ColorDrawable(Color.parseColor("#555555")));
-//            int titleId = getResources().getIdentifier("action_bar_title", "id", "android");
-//            TextView abTitle = (TextView) findViewById(titleId);
-//            abTitle.setTextColor(Color.WHITE);
-//        }
         
         if (mApp.getNodeCtr() == mIntNodeCtr) {
             LogUtil.d("REQUEST GPIO STATUS");
