@@ -31,7 +31,7 @@ public class LogUtil {
         if (!BuildConfig.DEBUG)
             return;
 
-        m_strLogFilePath = Environment.getExternalStorageDirectory () + "/" + context.getPackageName();
+        m_strLogFilePath = Environment.getExternalStorageDirectory () + "/" + context.getResources().getString(R.string.app_name);
         File AppFolder = new File(m_strLogFilePath);
         if (!AppFolder.exists())
             AppFolder.mkdirs();
