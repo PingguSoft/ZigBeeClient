@@ -10,6 +10,9 @@ import java.util.Locale;
 import android.content.Context;
 import android.os.Environment;
 import android.util.Log;
+import android.view.Gravity;
+import android.widget.TextView;
+import android.widget.Toast;
 
 public class LogUtil {
     private static String   m_strTag = null;
@@ -181,5 +184,25 @@ public class LogUtil {
             format = "yyyy-MM-dd HH:mm:ss";
         SimpleDateFormat sdf = new SimpleDateFormat(format, locale);
         return sdf.format(date);
+    }
+    
+    public static Toast alert(Context ctx, String message) {
+        Toast t = Toast.makeText(ctx, message, Toast.LENGTH_SHORT);
+        TextView v = (TextView)t.getView().findViewById(android.R.id.message);
+        if(v != null) 
+            v.setGravity(Gravity.CENTER);
+        t.show();
+        
+        return t;
+    }
+    
+    public static Toast alert(Context ctx, int nResID) {
+        Toast t = Toast.makeText(ctx, nResID, Toast.LENGTH_SHORT);
+        TextView v = (TextView)t.getView().findViewById(android.R.id.message);
+        if(v != null) 
+            v.setGravity(Gravity.CENTER);
+        t.show();
+        
+        return t;
     }
 }
